@@ -1,9 +1,34 @@
 package pageturners.database;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 import pageturners.models.*;
 
 public class DatabaseManager {
     
+    private static Connection openConnection() throws SQLException {
+        // In real-world applications, these should not be hard-coded here.
+        final String url = "jdbc:mysql://cs2043.cs.unb.ca:3306/cs204301ateam10";
+        final String user = "cs204301ateam10";
+        final String password = "JYEOmR41";
+
+        Connection conn = null;
+
+        conn = DriverManager.getConnection(url, user, password);
+
+        return conn;
+    }
+
+    private static void closeConnection(Connection conn) {
+        try {
+            conn.close();
+        } catch (Exception e) {
+            System.err.printf("Couldn't close connection: (%s)%n", e.getMessage());
+        }
+    }
+
     public UserObject getUser(int userId) {
         throw new UnsupportedOperationException("Not implemented");
     }
