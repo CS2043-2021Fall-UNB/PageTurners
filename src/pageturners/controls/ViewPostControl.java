@@ -13,5 +13,9 @@ public class ViewPostControl implements ControlBase {
     
     public UserPostContentObject handleViewPost(int postId) {
         throw new UnsupportedOperationException("Not implemented");
+
+        UserPostContentObject postContent = databaseManager.getPostContent(postId);
+
+        return postContent;
     }
 }
