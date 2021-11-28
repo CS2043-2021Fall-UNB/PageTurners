@@ -3,7 +3,7 @@ package pageturners.controls;
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserCommentObject;
 
-public class AddUserCommentControl {
+public class AddUserCommentControl implements ControlBase {
     
     private final LoginControl loginControl;
     private final DatabaseManager databaseManager;
