@@ -3,7 +3,7 @@ package pageturners.controls;
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserPostContentObject;
 
-public class ViewPostControl {
+public class ViewPostControl implements ControlBase {
 
     private final DatabaseManager databaseManager;
 

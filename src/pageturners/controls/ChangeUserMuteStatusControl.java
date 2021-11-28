@@ -3,7 +3,7 @@ package pageturners.controls;
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserObject;
 
-public class ChangeUserMuteStatusControl {
+public class ChangeUserMuteStatusControl implements ControlBase {
 
     private final LoginControl loginControl;
     private final DatabaseManager databaseManager;

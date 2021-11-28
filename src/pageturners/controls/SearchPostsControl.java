@@ -4,7 +4,7 @@ import pageturners.database.DatabaseManager;
 import pageturners.models.SearchCriteria;
 import pageturners.models.UserPostObject;
 
-public class SearchPostsControl {
+public class SearchPostsControl implements ControlBase {
 
     private final DatabaseManager databaseManager;
 

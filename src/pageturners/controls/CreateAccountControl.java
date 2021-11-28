@@ -4,7 +4,7 @@ import pageturners.database.DatabaseManager;
 import pageturners.models.UserCreationResult;
 import pageturners.models.UserCreationInfo;
 
-public class CreateAccountControl {
+public class CreateAccountControl implements ControlBase {
 
     private final DatabaseManager databaseManager;
 
