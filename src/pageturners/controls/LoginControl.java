@@ -4,7 +4,7 @@ import pageturners.database.DatabaseManager;
 import pageturners.models.AdminObject;
 import pageturners.models.UserObject;
 
-public class LoginControl {
+public class LoginControl implements ControlBase {
 
     private final DatabaseManager databaseManager;
 
