@@ -4,7 +4,7 @@ import pageturners.database.DatabaseManager;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserPostObject;
 
-public class ViewCategoryControl {
+public class ViewCategoryControl implements ControlBase {
 
     private final DatabaseManager databaseManager;
 
