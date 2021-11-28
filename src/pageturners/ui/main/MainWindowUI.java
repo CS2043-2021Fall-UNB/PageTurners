@@ -76,5 +76,26 @@ public class MainWindowUI {
     }
 
     private void createControls() {
+        // clear controls to ensure directory is empty before adding
+        controlDirectory.clearControls();
+
+        // create login control first because its needed by other controls
+        LoginControl loginControl = new LoginControl(databaseManager);
+        controlDirectory.addControl(loginControl);
+
+        // create and add all controls to the control directory
+        controlDirectory.addControl(new AddUserCommentControl(loginControl, databaseManager));
+        controlDirectory.addControl(new AddUserPostControl(loginControl, databaseManager));
+        controlDirectory.addControl(new ChangeUserMuteStatusControl(loginControl, databaseManager));
+        controlDirectory.addControl(new CreateAccountControl(databaseManager));
+        controlDirectory.addControl(new DeleteAccountControl(loginControl, databaseManager));
+        controlDirectory.addControl(new DeleteCommentControl(loginControl, databaseManager));
+        controlDirectory.addControl(new DeleteUserAccountControl(loginControl, databaseManager));
+        controlDirectory.addControl(new DeleteUserCommentControl(loginControl, databaseManager));
+        controlDirectory.addControl(new DeleteUserPostControl(loginControl, databaseManager));
+        controlDirectory.addControl(new ManageModeratorControl(loginControl, databaseManager));
+        controlDirectory.addControl(new SearchPostsControl(databaseManager));
+        controlDirectory.addControl(new ViewCategoryControl(databaseManager));
+        controlDirectory.addControl(new ViewPostControl(databaseManager));
     }
 }
