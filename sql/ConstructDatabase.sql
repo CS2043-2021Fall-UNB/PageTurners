@@ -3,6 +3,6 @@
 -- Create UserCategory table
 CREATE TABLE UserCategory (
     CategoryID INT NOT NULL AUTO_INCREMENT,
-    CategoryName VARCHAR(255) NOT NULL
+    CategoryName VARCHAR(255) NOT NULL,
+    PRIMARY KEY (CategoryID)
 );
-
