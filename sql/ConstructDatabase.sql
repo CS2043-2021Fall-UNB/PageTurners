@@ -17,7 +17,7 @@ CREATE TABLE UserPost (
     CategoryID INT NOT NULL,
     Title VARCHAR(50),
     AuthorID INT NOT NULL,
-    PostDate DATE,
+    PostDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (ID),
     FOREIGN KEY (CategoryID) REFERENCES UserCategory(CategoryID)
 );

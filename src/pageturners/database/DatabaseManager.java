@@ -2,6 +2,8 @@ package pageturners.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import pageturners.models.*;
@@ -14,14 +16,14 @@ public class DatabaseManager {
         final String user = "cs204301ateam10";
         final String password = "JYEOmR41";
 
-        Connection conn = null;
-
-        conn = DriverManager.getConnection(url, user, password);
-
-        return conn;
+        return DriverManager.getConnection(url, user, password);
     }
 
     private static void closeConnection(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+
         try {
             conn.close();
         } catch (Exception e) {
@@ -74,7 +76,38 @@ public class DatabaseManager {
     }
 
     public UserObject getUser(String username) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE Username LIKE ? LIMIT 1;");
+
+            statement.setString(1, username);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = new UserObject();
+
+                user.id = result.getInt("UserID");
+                user.username = result.getString("Username");
+                user.password = result.getString("Password");
+                user.accountCreated = result.getTimestamp("AccountCreated");
+                user.isMod = result.getBoolean("IsMod");
+                user.isMuted = result.getBoolean("IsMuted");
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.getUser(int) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
