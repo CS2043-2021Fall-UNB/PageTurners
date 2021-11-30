@@ -13,9 +13,11 @@ CREATE TABLE UserCategory (
 -- Create UserPost table
 CREATE TABLE UserPost (
     ID INT NOT NULL AUTO_INCREMENT,
+    CategoryID INT NOT NULL,
     Title VARCHAR(50),
     AuthorID INT NOT NULL,
     PostDate DATE,
-    PRIMARY KEY (ID)
+    PRIMARY KEY (ID),
+    FOREIGN KEY (CategoryID) REFERENCES UserCategory(CategoryID)
 );
 
