@@ -10,6 +10,7 @@ CREATE TABLE UserCategory (
     PRIMARY KEY (CategoryID)
 );
 
+-- Create UserPost table
 CREATE TABLE UserPost (
     ID INT NOT NULL, Title varchar(50), AuthorID INT NOT NULL,
     PostDate date, primary key (ID)
