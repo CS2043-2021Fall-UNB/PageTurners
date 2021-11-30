@@ -13,10 +13,13 @@ public class ViewCategoryControl implements ControlBase {
     }
     
     public UserCategoryObject[] handleViewCategories() {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.getCategories();
     }
 
-    public UserPostObject handleViewCategory(int categoryId){
-        throw new UnsupportedOperationException("Not implemented");
+    public UserPostObject[] handleViewCategory(int categoryId){
+
+        UserPostObject[] postObject = databaseManager.getPostsByCategory(categoryId);
+
+        return postObject;
     }
 }
