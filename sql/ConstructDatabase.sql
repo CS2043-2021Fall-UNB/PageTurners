@@ -1,8 +1,8 @@
 /* SQL script for constructing the PageTurners database */
 
 -- Drop existing tables
-DROP TABLE IF EXISTS UserCategory;
 DROP TABLE IF EXISTS UserPost;
+DROP TABLE IF EXISTS UserCategory;
 
 -- Create UserCategory table
 CREATE TABLE UserCategory (
