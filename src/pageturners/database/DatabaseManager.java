@@ -94,7 +94,7 @@ public class DatabaseManager {
                 user.id = result.getInt("UserID");
                 user.username = result.getString("Username");
                 user.password = result.getString("Password");
-                user.accountCreated = result.getDate("AccountCreated");
+                user.accountCreated = result.getTimestamp("AccountCreated");
                 user.isMod = result.getBoolean("IsMod");
                 user.isMuted = result.getBoolean("IsMuted");
             }
