@@ -1,5 +1,7 @@
 package pageturners.models;
 
+import java.util.Date;
+
 public class UserCommentObject {
     
     public int commentId; //Comments ID
