@@ -18,6 +18,10 @@ public class DatabaseManager {
     }
 
     private static void closeConnection(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+
         try {
             conn.close();
         } catch (Exception e) {
