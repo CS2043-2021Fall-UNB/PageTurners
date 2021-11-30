@@ -2,6 +2,7 @@
 
 -- Drop existing tables
 DROP TABLE IF EXISTS UserCategory;
+DROP TABLE IF EXISTS UserPost;
 
 -- Create UserCategory table
 CREATE TABLE UserCategory (
@@ -20,4 +21,3 @@ CREATE TABLE UserPost (
     PRIMARY KEY (ID),
     FOREIGN KEY (CategoryID) REFERENCES UserCategory(CategoryID)
 );
-
