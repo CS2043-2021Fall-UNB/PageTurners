@@ -11,7 +11,7 @@ CREATE TABLE UserRecord (
     UserID INT NOT NULL AUTO_INCREMENT,
     UserName VARCHAR(16) NOT NULL,
     Password VARCHAR(64) NOT NULL,
-    AccountCreated DATE,
+    AccountCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
     IsMod BOOLEAN,
     IsMuted BOOLEAN
 );
@@ -21,5 +21,5 @@ CREATE TABLE AdminRecord (
     AdminID INT NOT NULL AUTO_INCREMENT,
     UserName VARCHAR(16) NOT NULL,
     Password VARCHAR(64) NOT NULL,
-    AccountCreated DATE
+    AccountCreated DATETIME DEFAULT CURRENT_TIMESTAMP
 );
