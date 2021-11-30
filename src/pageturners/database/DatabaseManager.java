@@ -14,11 +14,7 @@ public class DatabaseManager {
         final String user = "cs204301ateam10";
         final String password = "JYEOmR41";
 
-        Connection conn = null;
-
-        conn = DriverManager.getConnection(url, user, password);
-
-        return conn;
+        return DriverManager.getConnection(url, user, password);
     }
 
     private static void closeConnection(Connection conn) {
