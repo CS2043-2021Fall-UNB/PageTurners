@@ -3,6 +3,7 @@ package pageturners.controls;
 import pageturners.database.DatabaseManager;
 import pageturners.models.SearchCriteria;
 import pageturners.models.UserPostObject;
+import java.util.*;
 
 public class SearchPostsControl implements ControlBase {
 
@@ -12,7 +13,7 @@ public class SearchPostsControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserPostObject[] handleSearchPosts(SearchCriteria searchCritera) {
+    public ArrayList<UserPostObject> handleSearchPosts(SearchCriteria searchCritera) {
         return databaseManager.getPostsByKeywords(searchCritera);
     }
 }
