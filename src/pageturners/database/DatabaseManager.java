@@ -64,7 +64,7 @@ public class DatabaseManager {
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select * from BookInfo where ";
+            String sqlQuery = "select * from UserPost where ";
             for (int i=0; i<searchCritera.keywords.length; i++) {
                 if (i < searchCritera.keywords.length - 1)
                     sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%' or ";
@@ -86,7 +86,7 @@ public class DatabaseManager {
                 i++;
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getBooksByKeywords");
+            System.err.println("SQL error: getPostsByKeywords");
         }
 
         return PostList;
