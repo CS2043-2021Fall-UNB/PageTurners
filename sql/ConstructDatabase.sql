@@ -6,3 +6,8 @@ CREATE TABLE UserCategory (
     CategoryName VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE UserPost (
+    ID INT NOT NULL, Title varchar(50), AuthorID INT NOT NULL,
+    PostDate date, primary key (ID)
+);
+

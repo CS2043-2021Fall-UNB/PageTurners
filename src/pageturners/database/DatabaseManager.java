@@ -69,6 +69,10 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    public UserPostContentObject getPostContent(int postID){
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
     public UserObject getUser(String username) {
         throw new UnsupportedOperationException("Not implemented");
     }
