@@ -13,6 +13,6 @@ public class SearchPostsControl implements ControlBase {
     }
 
     public UserPostObject[] handleSearchPosts(SearchCriteria searchCritera) {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.getPostsByKeywords(searchCritera);
     }
 }
