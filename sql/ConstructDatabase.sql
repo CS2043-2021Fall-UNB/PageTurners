@@ -12,7 +12,7 @@ CREATE TABLE UserCategory (
 
 -- Create UserPost table
 CREATE TABLE UserPost (
-    ID INT NOT NULL,
+    ID INT NOT NULL AUTO_INCREMENT,
     Title VARCHAR(50),
     AuthorID INT NOT NULL,
     PostDate DATE,
