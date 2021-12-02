@@ -92,8 +92,30 @@ public class DatabaseManager {
         return PostList;
     }
 
-    public UserCategoryObject[] getCategories() {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserCategoryObject> getCategories() {
+        ArrayList<UserCategoryObject> CategoryList = new ArrayList<UserCategoryObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select * from UserCategory";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserCategoryObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserCategoryObject UCate = new UserCategoryObject();
+                UCate.categoryId = rs.getInt(1);
+                UCate.categoryName = rs.getString(2);
+                UCate.postIds = rs.getInt(3);
+                CategoryList.add(UCate);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return CategoryList;
     }
 
     public UserPostObject[] getPostsByCategory(int categoryId) {
