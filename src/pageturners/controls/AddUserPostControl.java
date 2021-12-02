@@ -14,6 +14,6 @@ public class AddUserPostControl implements ControlBase {
     }
 
     public UserPostObject handleAddPost(int categoryId, int userId, String postContents) {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.addPost(categoryId, userId, postContents);
     }
 }
