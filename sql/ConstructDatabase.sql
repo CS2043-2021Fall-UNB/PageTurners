@@ -21,3 +21,23 @@ CREATE TABLE UserPost (
     PRIMARY KEY (ID),
     FOREIGN KEY (CategoryID) REFERENCES UserCategory(CategoryID)
 );
+
+-- Create UserRecord table
+CREATE TABLE UserRecord (
+    UserID INT NOT NULL AUTO_INCREMENT,
+    UserName VARCHAR(16) NOT NULL,
+    Password VARCHAR(64) NOT NULL,
+    AccountCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
+    IsMod BOOLEAN,
+    IsMuted BOOLEAN,
+    PRIMARY KEY (UserID)
+);
+
+-- Create AdminRecordTable
+CREATE TABLE AdminRecord (
+    AdminID INT NOT NULL AUTO_INCREMENT,
+    UserName VARCHAR(16) NOT NULL,
+    Password VARCHAR(64) NOT NULL,
+    AccountCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (AdminID)
+);
