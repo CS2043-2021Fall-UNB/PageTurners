@@ -1,6 +1,6 @@
 package pageturners.models;
 
 public class UserPostContentObject {
-    UserPostObject userPost;
-    ArrayList<UserCommentObject> userComment;
+    public UserPostObject userPost;
+    public ArrayList<UserCommentObject> userComment;
 }
