@@ -64,7 +64,7 @@ public class DatabaseManager {
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select * from BookInfo where ";
+            String sqlQuery = "select * from UserPost where ";
             for (int i=0; i<searchCritera.keywords.length; i++) {
                 if (i < searchCritera.keywords.length - 1)
                     sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%' or ";
@@ -86,18 +86,62 @@ public class DatabaseManager {
                 i++;
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getBooksByKeywords");
+            System.err.println("SQL error: getPostsByKeywords");
         }
 
         return PostList;
     }
 
-    public UserCategoryObject[] getCategories() {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserCategoryObject> getCategories() {
+        ArrayList<UserCategoryObject> CategoryList = new ArrayList<UserCategoryObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select categoryId, categoryName from UserCategory";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserCategoryObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserCategoryObject UCate = new UserCategoryObject();
+                UCate.categoryId = rs.getInt(1);
+                UCate.categoryName = rs.getString(2);
+                CategoryList.add(UCate);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return CategoryList;
     }
 
-    public UserPostObject[] getPostsByCategory(int categoryId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserPostObject> getPostsByCategory(int categoryId) {
+        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select * from UserPost where CategoryID = " + categoryId + ";";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserPostObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserPostObject UPost = new UserPostObject();
+                UPost.postID = rs.getInt(1);
+                UPost.title = rs.getString(2);
+                UPost.authorID = rs.getInt(3);
+                UPost.date = rs.getTimestamp(4);
+                PostList.add(UPost);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return PostList;
     }
 
     public UserPostContentObject getPostContent(int postID){
