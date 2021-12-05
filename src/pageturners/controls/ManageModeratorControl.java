@@ -14,10 +14,14 @@ public class ManageModeratorControl implements ControlBase {
     }
 
     public UserObject[] handleViewAllUsers() {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.getAllUsers();
     }
 
     public boolean handleUpdateModeratorPrivilege(int userId, boolean isModerator) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (loginControl.getAdminObject() == null) {
+            return false;
+        }
+
+        return databaseManager.updateModeratorPrivilege(userId, isModerator) != null;
     }
 }
