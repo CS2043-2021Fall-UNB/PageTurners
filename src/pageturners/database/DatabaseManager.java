@@ -110,9 +110,11 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject UPost = new UserPostObject();
                 UPost.postID = rs.getInt(1);
-                UPost.title = rs.getString(2);
-                UPost.authorID = rs.getInt(3);
-                UPost.date = rs.getTimestamp(4);
+                UPost.cateID = rs.getInt(2);
+                UPost.title = rs.getString(3);
+                UPost.content = rs.getString(4);
+                UPost.authorID = rs.getInt(5);
+                UPost.date = rs.getTimestamp(6);
                 PostList.add(UPost);
                 i++;
             }
@@ -163,9 +165,11 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject UPost = new UserPostObject();
                 UPost.postID = rs.getInt(1);
-                UPost.title = rs.getString(2);
-                UPost.authorID = rs.getInt(3);
-                UPost.date = rs.getTimestamp(4);
+                UPost.cateID = rs.getInt(2);
+                UPost.title = rs.getString(3);
+                UPost.content = rs.getString(4);
+                UPost.authorID = rs.getInt(5);
+                UPost.date = rs.getTimestamp(6);
                 PostList.add(UPost);
                 i++;
             }
