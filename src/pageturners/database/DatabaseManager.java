@@ -185,7 +185,7 @@ public class DatabaseManager {
       try {
           connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password LIKE ? LIMIT 1;");
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
           statement.setString(1, username);
           statement.setString(2, password);
@@ -221,7 +221,7 @@ public class DatabaseManager {
       try {
           connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password LIKE ? LIMIT 1;");
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
           statement.setString(1, username);
           statement.setString(2, password);
