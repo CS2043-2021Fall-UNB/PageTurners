@@ -86,7 +86,33 @@ public class DatabaseManager {
     }
 
     public UserObject updateModeratorPrivilege(int userId, boolean isModerator) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMod=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+
+            statement.setBoolean(1, isModerator);
+            statement.setInt(2, userId);
+            statement.setInt(3, userId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.updateModeratorPrivilege method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserCommentObject deleteComment(int commentId) {
