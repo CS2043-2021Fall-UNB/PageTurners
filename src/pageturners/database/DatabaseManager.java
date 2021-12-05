@@ -30,7 +30,38 @@ public class DatabaseManager {
     }
 
     public UserObject getUser(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserID = ? LIMIT 1;");
+
+          statement.setInt(1, userId);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.getUser(int) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public UserObject[] getAllUsers() {
@@ -192,11 +223,73 @@ public class DatabaseManager {
     }
 
     public UserObject getUserWithPassword(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+
+          statement.setString(1, username);
+          statement.setString(2, password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public AdminObject getAdminWithPassword(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+      AdminObject admin = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+
+          statement.setString(1, username);
+          statement.setString(2, password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              admin = new AdminObject();
+
+              admin.id = result.getInt("AdminID");
+              admin.username = result.getString("UserName");
+              admin.password = result.getString("Password");
+              admin.accountCreated = result.getTimestamp("AccountCreated");
+          }
+      }
+      catch (SQLException e) {
+          admin = null;
+          System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return admin;
     }
 
     public boolean deletePost(int postId) {
