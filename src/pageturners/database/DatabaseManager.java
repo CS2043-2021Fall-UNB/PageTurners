@@ -99,7 +99,7 @@ public class DatabaseManager {
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select * from UserCategory";
+            String sqlQuery = "select categoryId, categoryName from UserCategory";
             //execute SQL query
             ResultSet rs = st.executeQuery(sqlQuery);
             //convert retrieved rows to UserCategoryObject[]
@@ -108,7 +108,6 @@ public class DatabaseManager {
                 UserCategoryObject UCate = new UserCategoryObject();
                 UCate.categoryId = rs.getInt(1);
                 UCate.categoryName = rs.getString(2);
-                UCate.postIds = rs.getInt(3);
                 CategoryList.add(UCate);
                 i++;
             }
@@ -118,8 +117,31 @@ public class DatabaseManager {
         return CategoryList;
     }
 
-    public UserPostObject[] getPostsByCategory(int categoryId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserPostObject> getPostsByCategory(int categoryId) {
+        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select * from UserPost where CategoryID = " + categoryId + ";";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserPostObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserPostObject UPost = new UserPostObject();
+                UPost.postID = rs.getInt(1);
+                UPost.title = rs.getString(2);
+                UPost.authorID = rs.getInt(3);
+                UPost.date = rs.getTimestamp(4);
+                PostList.add(UPost);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return PostList;
     }
 
     public UserPostContentObject getPostContent(int postID){
