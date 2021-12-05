@@ -177,14 +177,24 @@ public class DatabaseManager {
       try {
           connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("INSERT INTO UserRecord (UserName, Password, IsMod, IsMuted) VALUES (?, sha1(?), FALSE, FALSE);");
+          PreparedStatement statement =
+          connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?)); SELECT * FROM UserRecord WHERE UserId=LAST_INSERT_ID();");
 
           statement.setString(1, userInfo.username);
           statement.setString(2, userInfo.password);
 
           ResultSet result = statement.executeQuery();
 
-          user = getUserWithPassword(userInfo.username, userInfo.password);
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
       }
       catch (SQLException e) {
           user = null;
