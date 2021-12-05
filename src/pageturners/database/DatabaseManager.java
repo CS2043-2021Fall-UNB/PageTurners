@@ -171,7 +171,30 @@ public class DatabaseManager {
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("INSERT INTO UserRecord (UserName, Password, IsMod, IsMuted) VALUES (?, sha1(?), FALSE, FALSE);");
+
+          statement.setString(1, userInfo.username);
+          statement.setString(2, userInfo.password);
+
+          ResultSet result = statement.executeQuery();
+
+          user = getUserWithPassword(userInfo.username, userInfo.password);
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public boolean deleteUser(int userId) {
