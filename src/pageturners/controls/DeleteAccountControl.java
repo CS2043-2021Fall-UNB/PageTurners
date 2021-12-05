@@ -14,10 +14,22 @@ public class DeleteAccountControl implements ControlBase {
     }
 
     public UserObject[] handleDisplayUsers() {
-        throw new UnsupportedOperationException("Not implemented");
+      if (loginControl.getAdminObject() == null) {
+          return null;
+      }
+
+      return databaseManager.getAllUsers();
     }
 
     public boolean handleDeleteAccount(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
+      if (loginControl.getAdminObject() == null) {
+          return false;
+      }
+
+      if(!databaseManager.deleteUser(userID)){
+          return false;
+      }
+
+      return true;
     }
 }
