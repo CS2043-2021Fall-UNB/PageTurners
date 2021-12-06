@@ -14,10 +14,14 @@ public class ChangeUserMuteStatusControl implements ControlBase {
     }
 
     public UserObject getUserMuteOptions(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.getUser(userId);
     }
 
     public UserObject handleUpdateUserMute(int userId, boolean muteStatus) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (loginControl.getAdminObject() == null) {
+            return null;
+        }
+
+        return databaseManager.updateUserMute(userId, muteStatus);
     }
 }

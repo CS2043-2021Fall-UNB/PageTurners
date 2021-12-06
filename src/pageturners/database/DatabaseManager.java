@@ -29,8 +29,52 @@ public class DatabaseManager {
         }
     }
 
+    private UserObject getUserFromResultSet(ResultSet result) throws SQLException {
+        UserObject user = new UserObject();
+
+        user.id = result.getInt("UserID");
+        user.username = result.getString("Username");
+        user.password = result.getString("Password");
+        user.accountCreated = result.getTimestamp("AccountCreated");
+        user.isMod = result.getBoolean("IsMod");
+        user.isMuted = result.getBoolean("IsMuted");
+
+        return user;
+    }
+
     public UserObject getUser(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserID = ? LIMIT 1;");
+
+          statement.setInt(1, userId);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.getUser(int) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public UserObject[] getAllUsers() {
@@ -38,11 +82,63 @@ public class DatabaseManager {
     }
 
     public UserObject updateUserMute(int userId, boolean muteStatus) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMuted=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+
+            statement.setBoolean(1, muteStatus);
+            statement.setInt(2, userId);
+            statement.setInt(3, userId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.updateUserMute method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserObject updateModeratorPrivilege(int userId, boolean isModerator) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMod=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+
+            statement.setBoolean(1, isModerator);
+            statement.setInt(2, userId);
+            statement.setInt(3, userId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.updateModeratorPrivilege method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserCommentObject deleteComment(int commentId) {
@@ -64,7 +160,7 @@ public class DatabaseManager {
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select * from BookInfo where ";
+            String sqlQuery = "select * from UserPost where ";
             for (int i=0; i<searchCritera.keywords.length; i++) {
                 if (i < searchCritera.keywords.length - 1)
                     sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%' or ";
@@ -79,25 +175,73 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject UPost = new UserPostObject();
                 UPost.postID = rs.getInt(1);
-                UPost.title = rs.getString(2);
-                UPost.authorID = rs.getInt(3);
-                UPost.date = rs.getTimestamp(4);
+                UPost.cateID = rs.getInt(2);
+                UPost.title = rs.getString(3);
+                UPost.content = rs.getString(4);
+                UPost.authorID = rs.getInt(5);
+                UPost.date = rs.getTimestamp(6);
                 PostList.add(UPost);
                 i++;
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getBooksByKeywords");
+            System.err.println("SQL error: getPostsByKeywords");
         }
 
         return PostList;
     }
 
-    public UserCategoryObject[] getCategories() {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserCategoryObject> getCategories() {
+        ArrayList<UserCategoryObject> CategoryList = new ArrayList<UserCategoryObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select categoryId, categoryName from UserCategory";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserCategoryObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserCategoryObject UCate = new UserCategoryObject();
+                UCate.categoryId = rs.getInt(1);
+                UCate.categoryName = rs.getString(2);
+                CategoryList.add(UCate);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return CategoryList;
     }
 
-    public UserPostObject[] getPostsByCategory(int categoryId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserPostObject> getPostsByCategory(int categoryId) {
+        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+
+            //create query string
+            String sqlQuery = "select * from UserPost where CategoryID = " + categoryId + ";";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+            //convert retrieved rows to UserPostObject[]
+            int i = 0;
+            while (rs.next()) {
+                UserPostObject UPost = new UserPostObject();
+                UPost.postID = rs.getInt(1);
+                UPost.cateID = rs.getInt(2);
+                UPost.title = rs.getString(3);
+                UPost.content = rs.getString(4);
+                UPost.authorID = rs.getInt(5);
+                UPost.date = rs.getTimestamp(6);
+                PostList.add(UPost);
+                i++;
+            }
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostsByKeywords");
+        }
+        return PostList;
     }
 
     public UserPostContentObject getPostContent(int postID){
@@ -118,14 +262,7 @@ public class DatabaseManager {
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                user = new UserObject();
-
-                user.id = result.getInt("UserID");
-                user.username = result.getString("Username");
-                user.password = result.getString("Password");
-                user.accountCreated = result.getTimestamp("AccountCreated");
-                user.isMod = result.getBoolean("IsMod");
-                user.isMuted = result.getBoolean("IsMuted");
+                user = getUserFromResultSet(result);
             }
         }
         catch (SQLException e) {
@@ -140,15 +277,103 @@ public class DatabaseManager {
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement =
+          connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?)); SELECT * FROM UserRecord WHERE UserId=LAST_INSERT_ID();");
+
+          statement.setString(1, userInfo.username);
+          statement.setString(2, userInfo.password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public UserObject getUserWithPassword(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+
+          statement.setString(1, username);
+          statement.setString(2, password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+            user = getUserFromResultSet(result);
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public AdminObject getAdminWithPassword(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+      AdminObject admin = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+
+          statement.setString(1, username);
+          statement.setString(2, password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              admin = new AdminObject();
+
+              admin.id = result.getInt("AdminID");
+              admin.username = result.getString("UserName");
+              admin.password = result.getString("Password");
+              admin.accountCreated = result.getTimestamp("AccountCreated");
+          }
+      }
+      catch (SQLException e) {
+          admin = null;
+          System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return admin;
     }
 
     //Delete POST Method displayed on ADMIN UI.

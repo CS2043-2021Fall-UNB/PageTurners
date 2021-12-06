@@ -14,6 +14,10 @@ public class DeleteCommentControl implements ControlBase {
     }
 
     public UserCommentObject handleDeleteComment(int commentId) {
-        throw new UnsupportedOperationException("Not implemented");
+        if (loginControl.getAdminObject() == null) {
+            return null;
+        }
+
+        return databaseManager.deleteComment(commentId);
     }
 }
