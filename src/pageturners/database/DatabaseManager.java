@@ -143,10 +143,6 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public boolean deleteUser(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
     public UserObject getUserWithPassword(String username, String password) {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -155,7 +151,35 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public boolean deletePost(int postId) {
+    //Delete POST Method displayed on ADMIN UI.
+    public UserPostObject deletePostAsAdmin(int userId,int postId) {
+        throw new UnsupportedOperationException("Not implemented");
+        UserPostObject post = null;
+        boolean isDeleted = false;
+        Connection connection = null;
+        try{
+            connection = openConnection();
+            Statement st = connection.createStatement();
+            //create SQL statement
+            String sqlQuery = "UPDATE UserPost SET = NULL WHERE postId = " + postId + ";";
+            //execute SQL query
+            ResultSet result = st.executeQuery(sqlQuery);
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.deletePost(int, int) User method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+    }
+    //Delete POST Method displayed on USER UI.
+    public UserPostObject deletePostAsUser(int postId) {
+        throw new UnsupportedOperationException("Not implemented");
+        UserPostObject user = null;
+    }
+    //Delete ACCOUNT method displayed on USER UI.
+    public boolean deleteAccountUser(int userId) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

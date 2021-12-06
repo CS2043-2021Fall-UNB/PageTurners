@@ -18,7 +18,9 @@ CREATE TABLE UserPost (
     Title VARCHAR(50),
     AuthorID INT NOT NULL,
     PostDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    IsDeleted BOOLEAN,
     PRIMARY KEY (ID),
+    FOREIGN KEY (UserID) REFERENCES UserRecord(UserID),
     FOREIGN KEY (CategoryID) REFERENCES UserCategory(CategoryID)
 );
 
@@ -30,6 +32,7 @@ CREATE TABLE UserRecord (
     AccountCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
     IsMod BOOLEAN,
     IsMuted BOOLEAN,
+    IsDeleted BOOLEAN,
     PRIMARY KEY (UserID)
 );
 
