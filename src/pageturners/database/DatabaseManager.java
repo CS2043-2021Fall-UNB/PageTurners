@@ -56,14 +56,7 @@ public class DatabaseManager {
           ResultSet result = statement.executeQuery();
 
           if (result.next()) {
-              user = new UserObject();
-
-              user.id = result.getInt("UserID");
-              user.username = result.getString("UserName");
-              user.password = result.getString("Password");
-              user.accountCreated = result.getTimestamp("AccountCreated");
-              user.isMod = result.getBoolean("IsMod");
-              user.isMuted = result.getBoolean("IsMuted");
+              user = getUserFromResultSet(result);
           }
       }
       catch (SQLException e) {
@@ -295,14 +288,7 @@ public class DatabaseManager {
           ResultSet result = statement.executeQuery();
 
           if (result.next()) {
-              user = new UserObject();
-
-              user.id = result.getInt("UserID");
-              user.username = result.getString("UserName");
-              user.password = result.getString("Password");
-              user.accountCreated = result.getTimestamp("AccountCreated");
-              user.isMod = result.getBoolean("IsMod");
-              user.isMuted = result.getBoolean("IsMuted");
+              user = getUserFromResultSet(result);
           }
       }
       catch (SQLException e) {
