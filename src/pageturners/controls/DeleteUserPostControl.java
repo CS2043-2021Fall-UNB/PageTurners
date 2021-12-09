@@ -13,6 +13,6 @@ public class DeleteUserPostControl implements ControlBase {
     }
 
     public boolean handleDeletePost(int postId) {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.addPost(postId);
     }
 }

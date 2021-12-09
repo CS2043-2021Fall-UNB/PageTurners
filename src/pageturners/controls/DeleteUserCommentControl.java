@@ -13,7 +13,7 @@ public class DeleteUserCommentControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserCommentObject handleDeleteComment() {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserCommentObject handleDeleteComment(int commentId) {
+        return databaseManager.deleteComment(commentId);
     }
 }
