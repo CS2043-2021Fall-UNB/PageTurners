@@ -364,24 +364,36 @@ public class DatabaseManager {
 
       return admin;
     }
+    // retrieve a Post from a ResultSet
+    private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
+        UserPostObject post = new UserPostObject();
 
+        post.postID = result.getInt("PostID");
+        post.cateID = result.getInt("CateID");
+        post.authorID = result.getInt("AuthorID");
+        post.title = result.getString("Title");
+        post.content = result.getString("Content");
+        post.date = result.getTimestamp("AccountCreated");
+        post.isDeleted = result.getBoolean("IsDeleted");
+
+        return post;
+    }
     //Delete POST Method displayed on ADMIN UI.
-    public UserPostObject deletePostAsAdmin(int userId,int postId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserPostObject deletePostAsAdmin(int postId) {
         UserPostObject post = null;
-        boolean isDeleted = false;
         Connection connection = null;
+
         try{
             connection = openConnection();
             Statement st = connection.createStatement();
             //create SQL statement
             String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
-                    + "UPDATE UserPost SET IsDeleted = TRUE WHERE UserId= " + postId + ";";
+                    + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
             //execute SQL query
             ResultSet result = st.executeUpdate(sqlQuery);
 
             if(result.next()){
-                post = getUserFromResultSet(result);
+                post = getPostFromResultSet(result);
             }
         }
         catch (SQLException e) {
