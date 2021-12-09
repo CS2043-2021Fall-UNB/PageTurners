@@ -34,11 +34,21 @@ CREATE TABLE UserRecord (
     PRIMARY KEY (UserID)
 );
 
--- Create AdminRecordTable
+-- Create AdminRecord table
 CREATE TABLE AdminRecord (
     AdminID INT NOT NULL AUTO_INCREMENT,
     UserName VARCHAR(16) NOT NULL,
     Password VARCHAR(64) NOT NULL,
     AccountCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (AdminID)
+);
+
+-- Create UserComment table
+CREATE TABLE UserComment (
+    CommentID INT NOT NULL AUTO_INCREMENT,
+    UserID INT NOT NULL,
+    Content VARCHAR(512),
+    CommentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (CommentID),
+    FOREIGN KEY (UserID) REFERENCES UserPost
 );

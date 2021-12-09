@@ -29,6 +29,19 @@ public class DatabaseManager {
         }
     }
 
+    private UserObject getUserFromResultSet(ResultSet result) throws SQLException {
+        UserObject user = new UserObject();
+
+        user.id = result.getInt("UserID");
+        user.username = result.getString("Username");
+        user.password = result.getString("Password");
+        user.accountCreated = result.getTimestamp("AccountCreated");
+        user.isMod = result.getBoolean("IsMod");
+        user.isMuted = result.getBoolean("IsMuted");
+
+        return user;
+    }
+
     public UserObject getUser(int userId) {
       UserObject user = null;
       Connection connection = null;
@@ -69,11 +82,63 @@ public class DatabaseManager {
     }
 
     public UserObject updateUserMute(int userId, boolean muteStatus) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMuted=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+
+            statement.setBoolean(1, muteStatus);
+            statement.setInt(2, userId);
+            statement.setInt(3, userId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.updateUserMute method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserObject updateModeratorPrivilege(int userId, boolean isModerator) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMod=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+
+            statement.setBoolean(1, isModerator);
+            statement.setInt(2, userId);
+            statement.setInt(3, userId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.updateModeratorPrivilege method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserCommentObject deleteComment(int commentId) {
@@ -238,14 +303,7 @@ public class DatabaseManager {
             ResultSet result = statement.executeQuery();
 
             if (result.next()) {
-                user = new UserObject();
-
-                user.id = result.getInt("UserID");
-                user.username = result.getString("Username");
-                user.password = result.getString("Password");
-                user.accountCreated = result.getTimestamp("AccountCreated");
-                user.isMod = result.getBoolean("IsMod");
-                user.isMuted = result.getBoolean("IsMuted");
+                user = getUserFromResultSet(result);
             }
         }
         catch (SQLException e) {
@@ -260,7 +318,40 @@ public class DatabaseManager {
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
-        throw new UnsupportedOperationException("Not implemented");
+      UserObject user = null;
+      Connection connection = null;
+
+      try {
+          connection = openConnection();
+
+          PreparedStatement statement =
+          connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?)); SELECT * FROM UserRecord WHERE UserId=LAST_INSERT_ID();");
+
+          statement.setString(1, userInfo.username);
+          statement.setString(2, userInfo.password);
+
+          ResultSet result = statement.executeQuery();
+
+          if (result.next()) {
+              user = new UserObject();
+
+              user.id = result.getInt("UserID");
+              user.username = result.getString("UserName");
+              user.password = result.getString("Password");
+              user.accountCreated = result.getTimestamp("AccountCreated");
+              user.isMod = result.getBoolean("IsMod");
+              user.isMuted = result.getBoolean("IsMuted");
+          }
+      }
+      catch (SQLException e) {
+          user = null;
+          System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
+      }
+      finally {
+          closeConnection(connection);
+      }
+
+      return user;
     }
 
     public boolean deleteUser(int userId) {
@@ -282,14 +373,7 @@ public class DatabaseManager {
           ResultSet result = statement.executeQuery();
 
           if (result.next()) {
-              user = new UserObject();
-
-              user.id = result.getInt("UserID");
-              user.username = result.getString("UserName");
-              user.password = result.getString("Password");
-              user.accountCreated = result.getTimestamp("AccountCreated");
-              user.isMod = result.getBoolean("IsMod");
-              user.isMuted = result.getBoolean("IsMuted");
+            user = getUserFromResultSet(result);
           }
       }
       catch (SQLException e) {
