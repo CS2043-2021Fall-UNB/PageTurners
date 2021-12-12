@@ -5,7 +5,6 @@ import pageturners.controls.*;
 import pageturners.database.DatabaseManager;
 import pageturners.ui.UIElement;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
