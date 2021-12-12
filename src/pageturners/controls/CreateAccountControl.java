@@ -15,7 +15,7 @@ public class CreateAccountControl implements ControlBase {
     public UserCreationResult handleCreateAccount(UserCreationInfo userInfo) {
         UserCreationResult r = new UserCreationResult();
 
-        if(username.length > 16){
+        if(userInfo.username.length() > 16){
           r.usernameResult = "Username must be less than 16 characters";
         }
         else if(!checkUsername(userInfo.username)){
@@ -48,7 +48,7 @@ public class CreateAccountControl implements ControlBase {
     }
 
     public boolean checkPassword(String password) {
-        if(password.length > 64 || password.length < 8){
+        if(password.length() > 64 || password.length() < 8){
           return false;
         }
 
