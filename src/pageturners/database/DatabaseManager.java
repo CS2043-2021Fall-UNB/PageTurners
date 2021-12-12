@@ -211,12 +211,7 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject post = new UserPostObject();
 
-                post.id = rs.getInt("ID");
-                post.categoryId = rs.getInt("CategoryID");
-                post.title = rs.getString("Title");
-                post.contents = rs.getString("Contents");
-                post.authorId = rs.getInt("AuthorID");
-                post.postDate = rs.getTimestamp("PostDate");
+                post = getPostFromResultSet(rs);
 
                 postList.add(post);
             }
@@ -274,12 +269,7 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject post = new UserPostObject();
                 
-                post.id = rs.getInt("ID");
-                post.categoryId = rs.getInt("CategoryID");
-                post.title = rs.getString("Title");
-                post.contents = rs.getString("Contents");
-                post.authorId = rs.getInt("AuthorID");
-                post.postDate = rs.getTimestamp("PostDate");
+                post = getPostFromResultSet(rs);
 
                 posts.add(post);
             }
@@ -308,12 +298,7 @@ public class DatabaseManager {
 
             UserPostObject post = new UserPostObject();
 
-            post.id = rs.getInt("ID");
-            post.categoryId = rs.getInt("CategoryID");
-            post.title = rs.getString("Title");
-            post.contents = rs.getString("Contents");
-            post.authorId = rs.getInt("AuthorID");
-            post.postDate = rs.getTimestamp("PostDate");
+            post = getPostFromResultSet(rs);
 
             ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
 
