@@ -32,6 +32,7 @@ public class LoginUI extends UIElement {
         GridPane grid = new GridPane();
         grid.setVgap(5);
         grid.setHgap(5);
+        grid.setMaxWidth(Double.MAX_VALUE);
 
         Label headerLabel = new Label("Already have an account? Login!");
         headerLabel.setFont(Font.font(15));
@@ -55,8 +56,6 @@ public class LoginUI extends UIElement {
         grid.add(passwordField, 1, 2);
         grid.add(loginButton, 0, 3, 2, 1);
         grid.add(outputLabel, 0, 4, 2, 1);
-
-        grid.setMaxWidth(Double.MAX_VALUE);
 
         GridPane.setHgrow(usernameField, Priority.ALWAYS);
         GridPane.setHgrow(passwordField, Priority.ALWAYS);
