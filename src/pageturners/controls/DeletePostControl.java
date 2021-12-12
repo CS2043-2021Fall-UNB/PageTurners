@@ -17,6 +17,6 @@ public class DeletePostControl implements ControlBase {
         if(loginControl.getAdminObject() == null){
             return null;
         }
-        return databaseManager.deletePostAsAdmin(postId);
+        return databaseManager.deletePost(postId);
     }
 }
