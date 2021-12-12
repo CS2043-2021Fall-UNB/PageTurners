@@ -40,6 +40,20 @@ public class DatabaseManager {
 
         return user;
     }
+    
+    private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
+        UserPostObject post = new UserPostObject();
+
+        post.id = result.getInt("PostID");
+        post.categoryId = result.getInt("CategoryID");
+        post.authorId = result.getInt("UserID");
+        post.title = result.getString("Title");
+        post.contents = result.getString("Contents");
+        post.postDate = result.getTimestamp("PostDate");
+        post.isDeleted = result.getBoolean("IsDeleted");
+
+        return post;
+    }
 
     public UserObject getUser(int userId) {
       UserObject user = null;
@@ -456,20 +470,7 @@ public class DatabaseManager {
 
         return admin;
     }
-    // retrieve a Post from a ResultSet
-    private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
-        UserPostObject post = new UserPostObject();
 
-        post.postID = result.getInt("PostID");
-        post.cateID = result.getInt("CateID");
-        post.authorID = result.getInt("AuthorID");
-        post.title = result.getString("Title");
-        post.content = result.getString("Content");
-        post.date = result.getTimestamp("AccountCreated");
-        post.isDeleted = result.getBoolean("IsDeleted");
-
-        return post;
-    }
     //Delete POST Method displayed on ADMIN UI.
     public UserPostObject deletePostAsAdmin(int postId) {
         UserPostObject post = null;
