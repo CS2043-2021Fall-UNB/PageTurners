@@ -439,7 +439,30 @@ public class DatabaseManager {
             statement.setString(1, username);
             statement.setString(2, password);
 
+<<<<<<< Updated upstream
             ResultSet result = statement.executeQuery();
+=======
+      return admin;
+    }
+    // retrieve a Post from a ResultSet
+    private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
+        UserPostObject post = new UserPostObject();
+
+        post.postID = result.getInt("PostID");
+        post.cateID = result.getInt("CateID");
+        post.authorID = result.getInt("AuthorID");
+        post.title = result.getString("Title");
+        post.content = result.getString("Content");
+        post.date = result.getTimestamp("AccountCreated");
+        post.isDeleted = result.getBoolean("IsDeleted");
+
+        return post;
+    }
+    //Delete POST Method displayed on ADMIN UI.
+    public UserPostObject deletePost(int postId) {
+        UserPostObject post = null;
+        Connection connection = null;
+>>>>>>> Stashed changes
 
             if (result.next()) {
                 admin = new AdminObject();
@@ -458,10 +481,15 @@ public class DatabaseManager {
             closeConnection(connection);
         }
 
+<<<<<<< Updated upstream
         return admin;
     }
 
     public boolean deletePost(int postId) {
+=======
+    //Delete ACCOUNT method displayed on USER UI.
+    public UserObject deleteAccountUser(int userId) {
+>>>>>>> Stashed changes
         throw new UnsupportedOperationException("Not implemented");
     }
 }
