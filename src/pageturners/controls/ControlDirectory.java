@@ -13,14 +13,26 @@ public class ControlDirectory {
         return controls.toArray(new ControlBase[0]);
     }
 
-    public ControlBase getControl(Class<?> classType) {
+    private ControlBase getControlInternal(Class<?> classType) {
         for (ControlBase control : controls) {
-            if (control.getClass() == classType) {
+            System.out.println(control.getClass().getName());
+
+            if (control.getClass().equals(classType)) {
                 return control;
             }
         }
-        
+
         return null;
+    }
+
+    public ControlBase getControl(Class<?> classType) {
+        ControlBase control = getControlInternal(classType);
+
+        if (control != null) {
+            return control;
+        }
+        
+        throw new RuntimeException("Cannot find a control of type " + classType.toString());
     }
 
     public void clearControls() {
@@ -28,7 +40,7 @@ public class ControlDirectory {
     }
 
     public boolean addControl(ControlBase control) {
-        if (getControl(control.getClass()) != null) {
+        if (getControlInternal(control.getClass()) != null) {
             return false;
         }
 
