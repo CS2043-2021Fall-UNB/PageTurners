@@ -47,7 +47,7 @@ public class MainWindowBodyUI extends UIElement {
     }
 
     public void displayCategories() {
-        ViewCategoryUI viewCategoryUI = new ViewCategoryUI((ViewCategoryControl)controlDirectory.getControl(ViewCategoryControl.class));
+        ViewCategoryUI viewCategoryUI = new ViewCategoryUI(controlDirectory, this);
 
         show(viewCategoryUI.getNode());
     }
