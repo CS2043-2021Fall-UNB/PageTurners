@@ -17,13 +17,14 @@ import pageturners.controls.SearchPostsControl;
 import pageturners.controls.ViewCategoryControl;
 import pageturners.controls.ViewPostControl;
 import pageturners.database.DatabaseManager;
+import pageturners.ui.UIElement;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.Node;
 
-public class MainWindowUI {
+public class MainWindowUI extends UIElement {
 
     public final int DEFAULT_WIDTH = 600;
     public final int DEFAULT_HEIGHT = 300;
@@ -31,17 +32,40 @@ public class MainWindowUI {
     private final DatabaseManager databaseManager;
     private final ControlDirectory controlDirectory;
 
-    private final MainWindowHeaderUI headerUI;
-    private final MainWindowBodyUI bodyUI;
-    private final MainWindowFooterUI footerUI;
+    private final VBox layout;
+
+    private MainWindowHeaderUI headerUI;
+    private MainWindowBodyUI bodyUI;
+    private MainWindowFooterUI footerUI;
 
     public MainWindowUI() {
         databaseManager = new DatabaseManager();
         controlDirectory = new ControlDirectory();
+        
+        createControls();
+
+        layout = new VBox();
 
         headerUI = new MainWindowHeaderUI(controlDirectory);
         bodyUI = new MainWindowBodyUI(controlDirectory);
         footerUI = new MainWindowFooterUI(controlDirectory);
+    }
+
+    @Override
+    public void update() {   
+        Node header = headerUI.getNode();
+        Node body = bodyUI.getNode();
+        Node footer = footerUI.getNode();
+
+        layout.getChildren().clear();
+        layout.getChildren().addAll(header, body, footer);
+
+        VBox.setVgrow(body, Priority.ALWAYS);     
+    }
+
+    @Override
+    public Node getNode() {
+        return layout;
     }
 
     public void setupStage(Stage stage) {
@@ -54,25 +78,11 @@ public class MainWindowUI {
     }
 
     private Scene getMainScene() {
-        Parent layout = createMainLayout();
+        update();
 
-        Scene scene = new Scene(layout, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        Scene scene = new Scene((Parent)getNode(), DEFAULT_WIDTH, DEFAULT_HEIGHT);
         
         return scene;
-    }
-
-    private Parent createMainLayout() {
-        createControls();
-
-        Node header = headerUI.createNode();
-        Node body = bodyUI.createNode();
-        Node footer = footerUI.createNode();
-
-        VBox layout = new VBox(header, body, footer);
-
-        VBox.setVgrow(body, Priority.ALWAYS);
-
-        return layout;
     }
 
     private void createControls() {
