@@ -456,60 +456,31 @@ public class DatabaseManager {
         return admin;
     }
 
-    //Delete POST Method displayed on ADMIN UI.
-    public UserPostObject deletePostAsAdmin(int postId) {
-        UserPostObject post = null;
+    public UserPostObject deletePost(int postId) {
         Connection connection = null;
-        AdminObject admin = getAdminWithPassword(String username, String password)
-        if(admin != NULL){
-            try{
-                connection = openConnection();
-                Statement st = connection.createStatement();
-                //create SQL statement
-                String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
-                        + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
-                //execute SQL query
-                ResultSet result = st.executeUpdate(sqlQuery);
-
-                if(result.next()){
-                    post = getPostFromResultSet(result);
-                }
-            }
-        }
-        else{
-            return null;
-        }
-        catch (SQLException e) {
-            post = null;
-            System.err.println("Exception occurred in DatabaseManager.deletePostAsAdmin(int, int) Admin method:\n" + e.toString());
-        }
-        finally {
-            closeConnection(connection);
-        }
-    }
-
-    //Delete POST Method displayed on USER UI.
-    public UserPostObject deletePostAsUser(int postId) {
         UserPostObject post = null;
-        Connection connection = null;
-        UserObject user = getUserWithPassword(String username, String password);
-        if(user != NULL){
-            try{
-                connection = openConnection();
-                Statement st = connection.createStatement();
-                //create SQL statement
-                String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
-                        + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
-                //execute SQL query
-                ResultSet result = st.executeUpdate(sqlQuery);
 
-                if(result.next()){
-                    post = getPostFromResultSet(result);
-                }
+        try{
+            connection = openConnection();
+
+            PreparedStatement st = connection.prepareStatement("UPDATE UserPost SET PostContent=NULL WHERE PostID=?;");
+
+            st.setInt(1, postId);
+            
+            //execute SQL query
+            if(st.executeUpdate() == 0) {
+                return null;
             }
-        }
-        else{
-            return null;
+
+            st = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=?;");
+
+            st.setInt(1, postId);
+
+            ResultSet result = st.executeQuery();
+
+            if(result.next()){
+                post = getPostFromResultSet(result);
+            }
         }
         catch (SQLException e) {
             post = null;
@@ -518,6 +489,8 @@ public class DatabaseManager {
         finally {
             closeConnection(connection);
         }
+
+        return post;
     }
     //Delete ACCOUNT method displayed on USER UI.
     public boolean deleteAccountAsUser(String userName, String password) {
