@@ -15,8 +15,6 @@ public class ControlDirectory {
 
     private ControlBase getControlInternal(Class<?> classType) {
         for (ControlBase control : controls) {
-            System.out.println(control.getClass().getName());
-
             if (control.getClass().equals(classType)) {
                 return control;
             }
