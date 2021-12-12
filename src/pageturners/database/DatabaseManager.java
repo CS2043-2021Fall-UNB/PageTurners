@@ -355,33 +355,40 @@ public class DatabaseManager {
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
-      UserObject user = null;
-      Connection connection = null;
+        UserObject user = null;
+        Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement =
-          connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?)); SELECT * FROM UserRecord WHERE UserId=LAST_INSERT_ID();");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?));");
 
-          statement.setString(1, userInfo.username);
-          statement.setString(2, userInfo.password);
+            statement.setString(1, userInfo.username);
+            statement.setString(2, userInfo.password);
 
-          ResultSet result = statement.executeQuery();
+            if (statement.executeUpdate() == 0) {
+                return null;
+            }
 
-          if (result.next()) {
-              user = getUserFromResultSet(result);
-          }
-      }
-      catch (SQLException e) {
-          user = null;
-          System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+            statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE Username LIKE ? LIMIT 1;");
 
-      return user;
+            statement.setString(1, userInfo.username);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public boolean deleteUser(int userId) {
@@ -392,63 +399,63 @@ public class DatabaseManager {
       UserObject user = null;
       Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
-          statement.setString(1, username);
-          statement.setString(2, password);
+            statement.setString(1, username);
+            statement.setString(2, password);
 
-          ResultSet result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
-          if (result.next()) {
-            user = getUserFromResultSet(result);
-          }
-      }
-      catch (SQLException e) {
-          user = null;
-          System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
 
-      return user;
+        return user;
     }
 
     public AdminObject getAdminWithPassword(String username, String password) {
-      AdminObject admin = null;
-      Connection connection = null;
+        AdminObject admin = null;
+        Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
-          statement.setString(1, username);
-          statement.setString(2, password);
+            statement.setString(1, username);
+            statement.setString(2, password);
 
-          ResultSet result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
-          if (result.next()) {
-              admin = new AdminObject();
+            if (result.next()) {
+                admin = new AdminObject();
 
-              admin.id = result.getInt("AdminID");
-              admin.username = result.getString("UserName");
-              admin.password = result.getString("Password");
-              admin.accountCreated = result.getTimestamp("AccountCreated");
-          }
-      }
-      catch (SQLException e) {
-          admin = null;
-          System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+                admin.id = result.getInt("AdminID");
+                admin.username = result.getString("UserName");
+                admin.password = result.getString("Password");
+                admin.accountCreated = result.getTimestamp("AccountCreated");
+            }
+        }
+        catch (SQLException e) {
+            admin = null;
+            System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
 
-      return admin;
+        return admin;
     }
 
     public boolean deletePost(int postId) {
