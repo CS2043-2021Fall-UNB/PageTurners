@@ -1,6 +1,5 @@
 package pageturners.ui.main;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
