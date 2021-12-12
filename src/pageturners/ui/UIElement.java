@@ -1,21 +1,22 @@
 package pageturners.ui;
 
-import javafx.scene.Node;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
 public abstract class UIElement {
-    protected UIElement parent;
+    private Pane pane;
 
-    public void setParent(UIElement parent) {
-        this.parent = parent;
+    protected UIElement() {
+        pane = new Pane();
     }
 
-    public abstract void update();
+    protected void show(Region region) {
+        pane.getChildren().setAll(region);
+        region.prefWidthProperty().bind(pane.widthProperty());
+        region.prefHeightProperty().bind(pane.heightProperty());
+    }
     
-    public abstract Node getNode();
-
-    protected void updateParent() {
-        if (parent != null) {
-            parent.update();
-        }
+    public Region getNode() {
+        return pane;
     }
 }
