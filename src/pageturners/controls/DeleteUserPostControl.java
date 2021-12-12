@@ -1,6 +1,8 @@
 package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
+import pageturners.models.UserObject;
+import pageturners.models.UserPostObject;
 
 public class DeleteUserPostControl implements ControlBase {
 
@@ -12,10 +14,17 @@ public class DeleteUserPostControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserPostObject handleDeletePost(int postId) {
-        if(loginControl.getUserObject() == null){
-            return null;
+    public boolean handleDeletePost(UserPostObject post) {
+        UserObject user = loginControl.getUserObject();
+
+        if (user == null) {
+            return false;
         }
-        return databaseManager.deletePostAsUser(postId);
+
+        if (user.id != post.authorId) {
+            return false;
+        }
+
+        return databaseManager.deletePost(post.id);
     }
 }

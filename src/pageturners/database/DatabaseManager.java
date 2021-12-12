@@ -1,7 +1,6 @@
 package pageturners.database;
 
 import java.sql.*;
-import java.lang.*;
 import java.util.ArrayList;
 
 import pageturners.models.*;
@@ -144,104 +143,190 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public UserPostContentObject addPost(int categoryId, int userId, String postContents) {
+    public UserPostObject addPost(int categoryId, int userId, String postContents) {
         //Spencer Code
         throw new UnsupportedOperationException("Not implemented");
     }
 
     public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCritera) {
-        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        ArrayList<UserPostObject> postList = new ArrayList<UserPostObject>();
+        Connection connection = null;
+
         try {
-            Connection conn = openConnection();
-            Statement st = conn.createStatement();
+            connection = openConnection();
 
             //create query string
-            String sqlQuery = "select * from UserPost where ";
-            for (int i=0; i<searchCritera.keywords.length; i++) {
-                if (i < searchCritera.keywords.length - 1)
-                    sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%' or ";
-                else sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%';";
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM UserPost");
+            
+            for (int i = 0; i < searchCritera.keywords.length; i++) {
+                if (i == 0) {
+                    queryBuilder.append(" WHERE ");
+                }
+                else {
+                    queryBuilder.append(" OR ");
+                }
+
+                queryBuilder.append("Title LIKE ?");
+            }
+
+            for (int i = 0; i < searchCritera.categories.length; i++) {
+                if (i == 0) {
+                    queryBuilder.append(" WHERE ");
+                }
+                else {
+                    queryBuilder.append(" OR ");
+                }
+
+                queryBuilder.append("Title LIKE ?");
+            }
+
+            queryBuilder.append(" ORDER BY PostDate DESC LIMIT 50;");
+
+            String sqlQuery = queryBuilder.toString();
+            PreparedStatement st = connection.prepareStatement(sqlQuery);
+
+            for (int i = 0; i < searchCritera.keywords.length; i++) {
+                st.setString(i + 1, "%" + searchCritera.keywords[i] + "%");
             }
 
             //execute SQL query
-            ResultSet rs = st.executeQuery(sqlQuery);
+            ResultSet rs = st.executeQuery();
 
             //convert retrieved rows to BookInfoObject[]
-            int i = 0;
+            
             while (rs.next()) {
-                UserPostObject UPost = new UserPostObject();
-                UPost.postID = rs.getInt(1);
-                UPost.cateID = rs.getInt(2);
-                UPost.title = rs.getString(3);
-                UPost.content = rs.getString(4);
-                UPost.authorID = rs.getInt(5);
-                UPost.date = rs.getTimestamp(6);
-                PostList.add(UPost);
-                i++;
+                UserPostObject post = new UserPostObject();
+
+                post.id = rs.getInt("ID");
+                post.categoryId = rs.getInt("CategoryID");
+                post.title = rs.getString("Title");
+                post.contents = rs.getString("Contents");
+                post.authorId = rs.getInt("AuthorID");
+                post.postDate = rs.getTimestamp("PostDate");
+
+                postList.add(post);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            postList = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostsByKeywords method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
         }
 
-        return PostList;
+        return postList;
     }
 
     public ArrayList<UserCategoryObject> getCategories() {
-        ArrayList<UserCategoryObject> CategoryList = new ArrayList<UserCategoryObject>();
+        ArrayList<UserCategoryObject> categories = new ArrayList<UserCategoryObject>();
         try {
             Connection conn = openConnection();
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select categoryId, categoryName from UserCategory";
+            String sqlQuery = "SELECT * FROM UserCategory;";
             //execute SQL query
             ResultSet rs = st.executeQuery(sqlQuery);
+
             //convert retrieved rows to UserCategoryObject[]
-            int i = 0;
+            
             while (rs.next()) {
-                UserCategoryObject UCate = new UserCategoryObject();
-                UCate.categoryId = rs.getInt(1);
-                UCate.categoryName = rs.getString(2);
-                CategoryList.add(UCate);
-                i++;
+                UserCategoryObject category = new UserCategoryObject();
+
+                category.categoryId = rs.getInt("CategoryID");
+                category.categoryName = rs.getString("CategoryName");
+
+                categories.add(category);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            categories = null;
+            System.err.println("Exception occurred in DatabaseManager.getCategories method:\n" + e.toString());
         }
-        return CategoryList;
+        return categories;
     }
 
     public ArrayList<UserPostObject> getPostsByCategory(int categoryId) {
-        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        ArrayList<UserPostObject> posts = new ArrayList<UserPostObject>();
         try {
             Connection conn = openConnection();
-            Statement st = conn.createStatement();
 
-            //create query string
-            String sqlQuery = "select * from UserPost where CategoryID = " + categoryId + ";";
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM UserPost WHERE CategoryID=?;");
+            st.setInt(1, categoryId);
+
             //execute SQL query
-            ResultSet rs = st.executeQuery(sqlQuery);
+            ResultSet rs = st.executeQuery();
+
             //convert retrieved rows to UserPostObject[]
-            int i = 0;
             while (rs.next()) {
-                UserPostObject UPost = new UserPostObject();
-                UPost.postID = rs.getInt(1);
-                UPost.cateID = rs.getInt(2);
-                UPost.title = rs.getString(3);
-                UPost.content = rs.getString(4);
-                UPost.authorID = rs.getInt(5);
-                UPost.date = rs.getTimestamp(6);
-                PostList.add(UPost);
-                i++;
+                UserPostObject post = new UserPostObject();
+                
+                post.id = rs.getInt("ID");
+                post.categoryId = rs.getInt("CategoryID");
+                post.title = rs.getString("Title");
+                post.contents = rs.getString("Contents");
+                post.authorId = rs.getInt("AuthorID");
+                post.postDate = rs.getTimestamp("PostDate");
+
+                posts.add(post);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            posts = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostsByCategory method:\n" + e.toString());
         }
-        return PostList;
+        return posts;
     }
 
     public UserPostContentObject getPostContent(int postID){
-        throw new UnsupportedOperationException("Not implemented");
+        Connection connection = null;
+        UserPostContentObject postContent = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost WHERE ID=?;");
+
+            st.setInt(1, postID);
+
+            postContent = new UserPostContentObject();
+
+            //execute SQL query
+            ResultSet rs = st.executeQuery();
+
+            UserPostObject post = new UserPostObject();
+
+            post.id = rs.getInt("ID");
+            post.categoryId = rs.getInt("CategoryID");
+            post.title = rs.getString("Title");
+            post.contents = rs.getString("Contents");
+            post.authorId = rs.getInt("AuthorID");
+            post.postDate = rs.getTimestamp("PostDate");
+
+            ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
+
+            while (rs.next()) {
+                UserCommentObject comment = new UserCommentObject();
+
+                comment.id = rs.getInt("CommentID");
+                comment.userId = rs.getInt("UserID");
+                comment.content = rs.getString("Content");
+                comment.commentDate = rs.getTimestamp("CommentDate");
+
+                commentList.add(comment);
+            }
+
+            postContent.userPost = post;
+            postContent.userComment = commentList;
+
+        }
+        catch (SQLException e) {
+            postContent = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostContent method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return postContent;
     }
 
     public UserObject getUser(String username) {
@@ -273,96 +358,103 @@ public class DatabaseManager {
     }
 
     public UserObject createUser(UserCreationInfo userInfo) {
-      UserObject user = null;
-      Connection connection = null;
+        UserObject user = null;
+        Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement =
-          connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?)); SELECT * FROM UserRecord WHERE UserId=LAST_INSERT_ID();");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserRecord (UserName, Password) VALUES (?, sha1(?));");
 
-          statement.setString(1, userInfo.username);
-          statement.setString(2, userInfo.password);
+            statement.setString(1, userInfo.username);
+            statement.setString(2, userInfo.password);
 
-          ResultSet result = statement.executeQuery();
+            if (statement.executeUpdate() == 0) {
+                return null;
+            }
 
-          if (result.next()) {
-              user = getUserFromResultSet(result);
-          }
-      }
-      catch (SQLException e) {
-          user = null;
-          System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+            statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE Username LIKE ? LIMIT 1;");
 
-      return user;
+            statement.setString(1, userInfo.username);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.createUser(UserCreationInfo) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return user;
     }
 
     public UserObject getUserWithPassword(String username, String password) {
       UserObject user = null;
       Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
-          statement.setString(1, username);
-          statement.setString(2, password);
+            statement.setString(1, username);
+            statement.setString(2, password);
 
-          ResultSet result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
-          if (result.next()) {
-            user = getUserFromResultSet(result);
-          }
-      }
-      catch (SQLException e) {
-          user = null;
-          System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+            if (result.next()) {
+                user = getUserFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            user = null;
+            System.err.println("Exception occurred in DatabaseManager.getUserWithPassword(String, String) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
 
-      return user;
+        return user;
     }
 
     public AdminObject getAdminWithPassword(String username, String password) {
-      AdminObject admin = null;
-      Connection connection = null;
+        AdminObject admin = null;
+        Connection connection = null;
 
-      try {
-          connection = openConnection();
+        try {
+            connection = openConnection();
 
-          PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM AdminRecord WHERE UserName LIKE ? AND Password = sha1(?) LIMIT 1;");
 
-          statement.setString(1, username);
-          statement.setString(2, password);
+            statement.setString(1, username);
+            statement.setString(2, password);
 
-          ResultSet result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
-          if (result.next()) {
-              admin = new AdminObject();
+            if (result.next()) {
+                admin = new AdminObject();
 
-              admin.id = result.getInt("AdminID");
-              admin.username = result.getString("UserName");
-              admin.password = result.getString("Password");
-              admin.accountCreated = result.getTimestamp("AccountCreated");
-          }
-      }
-      catch (SQLException e) {
-          admin = null;
-          System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
-      }
-      finally {
-          closeConnection(connection);
-      }
+                admin.id = result.getInt("AdminID");
+                admin.username = result.getString("UserName");
+                admin.password = result.getString("Password");
+                admin.accountCreated = result.getTimestamp("AccountCreated");
+            }
+        }
+        catch (SQLException e) {
+            admin = null;
+            System.err.println("Exception occurred in DatabaseManager.getAdminWithPassword(String, String) method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
 
-      return admin;
+        return admin;
     }
     // retrieve a Post from a ResultSet
     private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
