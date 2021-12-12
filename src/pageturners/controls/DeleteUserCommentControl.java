@@ -2,6 +2,7 @@ package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserCommentObject;
+import pageturners.models.UserObject;
 
 public class DeleteUserCommentControl implements ControlBase {
 
@@ -13,7 +14,17 @@ public class DeleteUserCommentControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserCommentObject handleDeleteComment() {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserCommentObject handleDeleteComment(UserCommentObject comment) {
+        UserObject user = loginControl.getUserObject();
+
+        if (user == null) {
+            return null;
+        }
+
+        if (user.id != comment.user.id) {
+            return null;
+        }
+
+        return databaseManager.deleteComment(comment.commentId);
     }
 }

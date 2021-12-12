@@ -14,6 +14,6 @@ public class AddUserCommentControl implements ControlBase {
     }
 
     public UserCommentObject handleAddComment(int postId, int userId, String commentContents) {
-        throw new UnsupportedOperationException("Not implemented");
+        return databaseManager.addComment(postId, userId, commentContents);
     } 
 }
