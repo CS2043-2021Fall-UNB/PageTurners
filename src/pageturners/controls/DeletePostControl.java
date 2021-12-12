@@ -2,6 +2,7 @@ package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserPostObject;
+
 public class DeletePostControl implements ControlBase {
 
     private final LoginControl loginControl;
