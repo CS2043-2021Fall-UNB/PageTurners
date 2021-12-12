@@ -190,7 +190,7 @@ public class DatabaseManager {
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select categoryId, categoryName from UserCategory";
+            String sqlQuery = "select CategoryID, CategoryName from UserCategory";
             //execute SQL query
             ResultSet rs = st.executeQuery(sqlQuery);
             //convert retrieved rows to UserCategoryObject[]
@@ -203,7 +203,7 @@ public class DatabaseManager {
                 i++;
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            System.err.println("SQL error: getCategories");
         }
         return CategoryList;
     }
@@ -232,13 +232,54 @@ public class DatabaseManager {
                 i++;
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            System.err.println("SQL error: getPostsByCategory");
         }
         return PostList;
     }
 
     public UserPostContentObject getPostContent(int postID){
-        throw new UnsupportedOperationException("Not implemented");
+        try {
+            Connection conn = openConnection();
+            Statement st = conn.createStatement();
+            UserPostContentObject UContent = new UserPostContentObject();
+
+            //create query string
+            String sqlQuery = "select * from UserPost where ID = " + postID + ";";
+            //execute SQL query
+            ResultSet rs = st.executeQuery(sqlQuery);
+
+            UserPostObject UPost = new UserPostObject();
+
+            UPost.postID = rs.getInt(1);
+            UPost.cateID = rs.getInt(2);
+            UPost.title = rs.getString(3);
+            UPost.content = rs.getString(4);
+            UPost.authorID = rs.getInt(5);
+            UPost.date = rs.getTimestamp(6);
+
+            sqlQuery = "select * from UserCommnet where PostID = " + postID + ";";
+            rs = st.executeQuery(sqlQuery);
+
+            ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
+
+            int i = 0;
+            while (rs.next()) {
+                UserCommentObject UCommnet = new UserCommentObject();
+                UCommnet.commentId = rs.getInt(1);
+                UCommnet.comment = rs.getString(2);
+                //UCommnet.title = rs.getString(3);
+                //UCommnet.content = rs.getString(4);
+                commentList.add(UCommnet);
+                i++;
+            }
+
+            UContent.userPost = UPost;
+            UContent.userComment = UContent;
+
+        } catch (SQLException e) {
+            System.err.println("SQL error: getPostContent");
+        }
+        return UContent;
     }
 
     public UserObject getUser(String username) {
