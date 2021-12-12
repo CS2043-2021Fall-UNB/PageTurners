@@ -12,7 +12,10 @@ public class DeleteUserAccountControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public boolean handleDeleteAccount() {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserObject handleDeleteAccount(int userId, String password) {
+        if(loginControl.getUserObject() == null){
+            return null;
+        }
+        return databaseManager.deleteAccountAsUser(userId, password);
     }
 }

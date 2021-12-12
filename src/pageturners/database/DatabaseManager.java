@@ -382,23 +382,28 @@ public class DatabaseManager {
     public UserPostObject deletePostAsAdmin(int postId) {
         UserPostObject post = null;
         Connection connection = null;
+        AdminObject admin = getAdminWithPassword(String username, String password)
+        if(admin != NULL){
+            try{
+                connection = openConnection();
+                Statement st = connection.createStatement();
+                //create SQL statement
+                String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
+                        + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
+                //execute SQL query
+                ResultSet result = st.executeUpdate(sqlQuery);
 
-        try{
-            connection = openConnection();
-            Statement st = connection.createStatement();
-            //create SQL statement
-            String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
-                    + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
-            //execute SQL query
-            ResultSet result = st.executeUpdate(sqlQuery);
-
-            if(result.next()){
-                post = getPostFromResultSet(result);
+                if(result.next()){
+                    post = getPostFromResultSet(result);
+                }
             }
+        }
+        else{
+            return null;
         }
         catch (SQLException e) {
             post = null;
-            System.err.println("Exception occurred in DatabaseManager.deletePost(int, int) User method:\n" + e.toString());
+            System.err.println("Exception occurred in DatabaseManager.deletePostAsAdmin(int, int) Admin method:\n" + e.toString());
         }
         finally {
             closeConnection(connection);
@@ -407,12 +412,62 @@ public class DatabaseManager {
 
     //Delete POST Method displayed on USER UI.
     public UserPostObject deletePostAsUser(int postId) {
-        throw new UnsupportedOperationException("Not implemented");
-        UserPostObject user = null;
+        UserPostObject post = null;
+        Connection connection = null;
+        UserObject user = getUserWithPassword(String username, String password);
+        if(user != NULL){
+            try{
+                connection = openConnection();
+                Statement st = connection.createStatement();
+                //create SQL statement
+                String sqlQuery = "UPDATE UserPost SET PostContent = NULL WHERE postId = " + postId + ";"
+                        + "UPDATE UserPost SET IsDeleted = TRUE WHERE postId = " + postId + ";";
+                //execute SQL query
+                ResultSet result = st.executeUpdate(sqlQuery);
+
+                if(result.next()){
+                    post = getPostFromResultSet(result);
+                }
+            }
+        }
+        else{
+            return null;
+        }
+        catch (SQLException e) {
+            post = null;
+            System.err.println("Exception occurred in DatabaseManager.deletePostAsUser(int, int) User method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
     }
     //Delete ACCOUNT method displayed on USER UI.
-    public boolean deleteAccountUser(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
-        UserRecord user = null;
+    public boolean deleteAccountAsUser(String userName, String password) {
+        UserObject user = getUserWithPassword(String username, String password);
+        if(user != NULL){
+            try{
+                connection = openConnection();
+                Statement st = connection.createStatement();
+                //create SQL statement
+                String sqlQuery = "UPDATE UserRecord SET PostContent = NULL WHERE postId = " + postId + ";"
+                        + "UPDATE UserRecord SET IsDeleted = TRUE WHERE postId = " + postId + ";";
+                //execute SQL query
+                ResultSet result = st.executeUpdate(sqlQuery);
+
+                if(result.next()){
+                    post = getPostFromResultSet(result);
+                }
+            }
+        }
+        else{
+            return null;
+        }
+        catch (SQLException e) {
+            post = null;
+            System.err.println("Exception occurred in DatabaseManager.deleteAccountAsUser(String, String) User method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
     }
 }

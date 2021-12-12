@@ -12,7 +12,10 @@ public class DeleteUserPostControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public boolean handleDeletePost(int postId) {
-        return databaseManager.addPost(postId);
+    public UserPostObject handleDeletePost(int postId) {
+        if(loginControl.getUserObject() == null){
+            return null;
+        }
+        return databaseManager.deletePostAsUser(postId);
     }
 }
