@@ -493,7 +493,7 @@ public class DatabaseManager {
         return post;
     }
     
-    public boolean deleteAccount(int userId) {
+    public boolean deleteUser(int userId) {
         Connection connection = null;
 
         try{
