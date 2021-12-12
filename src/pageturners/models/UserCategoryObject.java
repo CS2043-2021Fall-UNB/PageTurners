@@ -7,5 +7,3 @@ public class UserCategoryObject {
 
     public int[] postIds;
 }
-
-hello
