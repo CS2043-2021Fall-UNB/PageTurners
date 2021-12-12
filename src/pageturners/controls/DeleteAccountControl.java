@@ -26,7 +26,7 @@ public class DeleteAccountControl implements ControlBase {
           return false;
       }
 
-      if(!databaseManager.deleteUser(userID)){
+      if(!databaseManager.deleteUser(userId)){
           return false;
       }
 

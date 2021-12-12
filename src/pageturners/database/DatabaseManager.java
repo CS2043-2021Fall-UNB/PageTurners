@@ -1,7 +1,6 @@
 package pageturners.database;
 
 import java.sql.*;
-import java.lang.*;
 import java.util.ArrayList;
 
 import pageturners.models.*;
@@ -147,139 +146,184 @@ public class DatabaseManager {
     }
 
     public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCritera) {
-        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        ArrayList<UserPostObject> postList = new ArrayList<UserPostObject>();
+        Connection connection = null;
+
         try {
-            Connection conn = openConnection();
-            Statement st = conn.createStatement();
+            connection = openConnection();
 
             //create query string
-            String sqlQuery = "select * from UserPost where ";
-            for (int i=0; i<searchCritera.keywords.length; i++) {
-                if (i < searchCritera.keywords.length - 1)
-                    sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%' or ";
-                else sqlQuery = sqlQuery + "Title like '%" + searchCritera.keywords[i] + "%';";
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM UserPost");
+            
+            for (int i = 0; i < searchCritera.keywords.length; i++) {
+                if (i == 0) {
+                    queryBuilder.append(" WHERE ");
+                }
+                else {
+                    queryBuilder.append(" OR ");
+                }
+
+                queryBuilder.append("Title LIKE ?");
+            }
+
+            for (int i = 0; i < searchCritera.categories.length; i++) {
+                if (i == 0) {
+                    queryBuilder.append(" WHERE ");
+                }
+                else {
+                    queryBuilder.append(" OR ");
+                }
+
+                queryBuilder.append("Title LIKE ?");
+            }
+
+            queryBuilder.append(" ORDER BY PostDate DESC LIMIT 50;");
+
+            String sqlQuery = queryBuilder.toString();
+            PreparedStatement st = connection.prepareStatement(sqlQuery);
+
+            for (int i = 0; i < searchCritera.keywords.length; i++) {
+                st.setString(i + 1, "%" + searchCritera.keywords[i] + "%");
             }
 
             //execute SQL query
-            ResultSet rs = st.executeQuery(sqlQuery);
+            ResultSet rs = st.executeQuery();
 
             //convert retrieved rows to BookInfoObject[]
-            int i = 0;
+            
             while (rs.next()) {
-                UserPostObject UPost = new UserPostObject();
-                UPost.postID = rs.getInt(1);
-                UPost.cateID = rs.getInt(2);
-                UPost.title = rs.getString(3);
-                UPost.content = rs.getString(4);
-                UPost.authorID = rs.getInt(5);
-                UPost.date = rs.getTimestamp(6);
-                PostList.add(UPost);
-                i++;
+                UserPostObject post = new UserPostObject();
+
+                post.id = rs.getInt("ID");
+                post.categoryId = rs.getInt("CategoryID");
+                post.title = rs.getString("Title");
+                post.contents = rs.getString("Contents");
+                post.authorId = rs.getInt("AuthorID");
+                post.postDate = rs.getTimestamp("PostDate");
+
+                postList.add(post);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByKeywords");
+            postList = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostsByKeywords method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
         }
 
-        return PostList;
+        return postList;
     }
 
     public ArrayList<UserCategoryObject> getCategories() {
-        ArrayList<UserCategoryObject> CategoryList = new ArrayList<UserCategoryObject>();
+        ArrayList<UserCategoryObject> categories = new ArrayList<UserCategoryObject>();
         try {
             Connection conn = openConnection();
             Statement st = conn.createStatement();
 
             //create query string
-            String sqlQuery = "select CategoryID, CategoryName from UserCategory";
+            String sqlQuery = "SELECT * FROM UserCategory;";
             //execute SQL query
             ResultSet rs = st.executeQuery(sqlQuery);
+
             //convert retrieved rows to UserCategoryObject[]
-            int i = 0;
+            
             while (rs.next()) {
-                UserCategoryObject UCate = new UserCategoryObject();
-                UCate.categoryId = rs.getInt(1);
-                UCate.categoryName = rs.getString(2);
-                CategoryList.add(UCate);
-                i++;
+                UserCategoryObject category = new UserCategoryObject();
+
+                category.categoryId = rs.getInt("CategoryID");
+                category.categoryName = rs.getString("CategoryName");
+
+                categories.add(category);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getCategories");
+            categories = null;
+            System.err.println("Exception occurred in DatabaseManager.getCategories method:\n" + e.toString());
         }
-        return CategoryList;
+        return categories;
     }
 
     public ArrayList<UserPostObject> getPostsByCategory(int categoryId) {
-        ArrayList<UserPostObject> PostList = new ArrayList<UserPostObject>();
+        ArrayList<UserPostObject> posts = new ArrayList<UserPostObject>();
         try {
             Connection conn = openConnection();
-            Statement st = conn.createStatement();
 
-            //create query string
-            String sqlQuery = "select * from UserPost where CategoryID = " + categoryId + ";";
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM UserPost WHERE CategoryID=?;");
+            st.setInt(1, categoryId);
+
             //execute SQL query
-            ResultSet rs = st.executeQuery(sqlQuery);
+            ResultSet rs = st.executeQuery();
+
             //convert retrieved rows to UserPostObject[]
-            int i = 0;
             while (rs.next()) {
-                UserPostObject UPost = new UserPostObject();
-                UPost.postID = rs.getInt(1);
-                UPost.cateID = rs.getInt(2);
-                UPost.title = rs.getString(3);
-                UPost.content = rs.getString(4);
-                UPost.authorID = rs.getInt(5);
-                UPost.date = rs.getTimestamp(6);
-                PostList.add(UPost);
-                i++;
+                UserPostObject post = new UserPostObject();
+                
+                post.id = rs.getInt("ID");
+                post.categoryId = rs.getInt("CategoryID");
+                post.title = rs.getString("Title");
+                post.contents = rs.getString("Contents");
+                post.authorId = rs.getInt("AuthorID");
+                post.postDate = rs.getTimestamp("PostDate");
+
+                posts.add(post);
             }
         } catch (SQLException e) {
-            System.err.println("SQL error: getPostsByCategory");
+            posts = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostsByCategory method:\n" + e.toString());
         }
-        return PostList;
+        return posts;
     }
 
     public UserPostContentObject getPostContent(int postID){
+        Connection connection = null;
+        UserPostContentObject postContent = null;
+
         try {
-            Connection conn = openConnection();
-            Statement st = conn.createStatement();
-            UserPostContentObject UContent = new UserPostContentObject();
+            connection = openConnection();
 
-            //create query string
-            String sqlQuery = "select * from UserPost where ID = " + postID + ";";
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost WHERE ID=?;");
+
+            st.setInt(1, postID);
+
+            postContent = new UserPostContentObject();
+
             //execute SQL query
-            ResultSet rs = st.executeQuery(sqlQuery);
+            ResultSet rs = st.executeQuery();
 
-            UserPostObject UPost = new UserPostObject();
+            UserPostObject post = new UserPostObject();
 
-            UPost.postID = rs.getInt(1);
-            UPost.cateID = rs.getInt(2);
-            UPost.title = rs.getString(3);
-            UPost.content = rs.getString(4);
-            UPost.authorID = rs.getInt(5);
-            UPost.date = rs.getTimestamp(6);
-
-            sqlQuery = "select * from UserCommnet where PostID = " + postID + ";";
-            rs = st.executeQuery(sqlQuery);
+            post.id = rs.getInt("ID");
+            post.categoryId = rs.getInt("CategoryID");
+            post.title = rs.getString("Title");
+            post.contents = rs.getString("Contents");
+            post.authorId = rs.getInt("AuthorID");
+            post.postDate = rs.getTimestamp("PostDate");
 
             ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
 
-            int i = 0;
             while (rs.next()) {
-                UserCommentObject UCommnet = new UserCommentObject();
-                UCommnet.commentId = rs.getInt(1);
-                UCommnet.comment = rs.getString(2);
-                //UCommnet.title = rs.getString(3);
-                //UCommnet.content = rs.getString(4);
-                commentList.add(UCommnet);
-                i++;
+                UserCommentObject comment = new UserCommentObject();
+
+                comment.id = rs.getInt("CommentID");
+                comment.userId = rs.getInt("UserID");
+                comment.content = rs.getString("Content");
+                comment.commentDate = rs.getTimestamp("CommentDate");
+
+                commentList.add(comment);
             }
 
-            UContent.userPost = UPost;
-            UContent.userComment = UContent;
+            postContent.userPost = post;
+            postContent.userComment = commentList;
 
-        } catch (SQLException e) {
-            System.err.println("SQL error: getPostContent");
         }
-        return UContent;
+        catch (SQLException e) {
+            postContent = null;
+            System.err.println("Exception occurred in DatabaseManager.getPostContent method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return postContent;
     }
 
     public UserObject getUser(String username) {
