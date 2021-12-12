@@ -21,10 +21,10 @@ public class DeleteUserCommentControl implements ControlBase {
             return null;
         }
 
-        if (user.id != comment.user.id) {
+        if (user.id != comment.userId) {
             return null;
         }
 
-        return databaseManager.deleteComment(comment.commentId);
+        return databaseManager.deleteComment(comment.id);
     }
 }

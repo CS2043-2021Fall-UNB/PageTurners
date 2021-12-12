@@ -21,10 +21,10 @@ public class DeleteUserPostControl implements ControlBase {
             return false;
         }
 
-        if (user.id != post.authorID) {
+        if (user.id != post.authorId) {
             return false;
         }
 
-        return databaseManager.deletePost(post.postID);
+        return databaseManager.deletePost(post.id);
     }
 }

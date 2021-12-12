@@ -143,7 +143,7 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public UserPostContentObject addPost(int categoryId, int userId, String postContents) {
+    public UserPostObject addPost(int categoryId, int userId, String postContents) {
         //Spencer Code
         throw new UnsupportedOperationException("Not implemented");
     }
