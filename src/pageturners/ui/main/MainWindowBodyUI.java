@@ -11,13 +11,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
+import pageturners.controls.AddUserPostControl;
 import pageturners.controls.ControlDirectory;
 import pageturners.controls.CreateAccountControl;
 import pageturners.controls.LoginControl;
 import pageturners.controls.ViewCategoryControl;
 import pageturners.models.AdminObject;
+import pageturners.models.UserCategoryObject;
 import pageturners.models.UserObject;
 import pageturners.ui.UIElement;
+import pageturners.ui.modules.AddUserPostUI;
 import pageturners.ui.modules.CreateAccountUI;
 import pageturners.ui.modules.HomePageUI;
 import pageturners.ui.modules.LoginUI;
@@ -158,4 +161,10 @@ public class MainWindowBodyUI extends UIElement {
 
         show(layout);
     }
+
+	public void displayAddPost(UserCategoryObject category) {
+        AddUserPostUI addUserPostUI = new AddUserPostUI(controlDirectory, category);
+
+        show(addUserPostUI.getNode());
+	}
 }
