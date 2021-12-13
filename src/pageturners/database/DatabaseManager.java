@@ -315,7 +315,7 @@ public class DatabaseManager {
         try {
             connection = openConnection();
 
-            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost WHERE ID=?;");
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost NATURAL JOIN UserRecord WHERE PostID=? LIMIT 1;");
 
             st.setInt(1, postID);
 
@@ -324,14 +324,19 @@ public class DatabaseManager {
             //execute SQL query
             ResultSet rs = st.executeQuery();
 
-            UserPostObject post = new UserPostObject();
+            if (rs.next()) {
+                postContent.userPost = getPostFromResultSet(rs);
+                postContent.author = getUserFromResultSet(rs);
+            }
+            else {
+                return null;
+            }
 
-            post.id = rs.getInt("ID");
-            post.categoryId = rs.getInt("CategoryID");
-            post.title = rs.getString("Title");
-            post.contents = rs.getString("Contents");
-            post.authorId = rs.getInt("AuthorID");
-            post.postDate = rs.getTimestamp("PostDate");
+            st = connection.prepareStatement("SELECT * FROM UserComment NATURAL JOIN UserRecord WHERE PostID=? LIMIT 200;");
+
+            st.setInt(1, postID);
+
+            rs = st.executeQuery();
 
             ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
 
@@ -339,15 +344,17 @@ public class DatabaseManager {
                 UserCommentObject comment = new UserCommentObject();
 
                 comment.id = rs.getInt("CommentID");
+                comment.postId = rs.getInt("PostID");
                 comment.userId = rs.getInt("UserID");
-                comment.content = rs.getString("Content");
+                comment.contents = rs.getString("Content");
                 comment.commentDate = rs.getTimestamp("CommentDate");
+
+                comment.user = getUserFromResultSet(rs);
 
                 commentList.add(comment);
             }
 
-            postContent.userPost = post;
-            postContent.userComment = commentList;
+            postContent.userComments = commentList;
 
         }
         catch (SQLException e) {
