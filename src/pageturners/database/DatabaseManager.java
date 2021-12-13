@@ -103,6 +103,9 @@ public class DatabaseManager {
             userArray = null;
             System.err.println("Exception occurred in DatabaseManager.getAllUser method: \n" + e.toString());
         }
+        finally {
+            closeConnection(connection);
+        }
         return userArray;
     }
 
