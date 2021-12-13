@@ -143,9 +143,41 @@ public class DatabaseManager {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    public UserPostObject addPost(int categoryId, int userId, String postContents) {
-        //Spencer Code
-        throw new UnsupportedOperationException("Not implemented");
+    public UserPostObject addPost(int categoryId, int userId, String title, String contents) {
+        UserPostObject post = null;
+        Connection connection = null;
+
+        try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserPost (CategoryID, UserID, Title, Contents) VALUES (?, ?, ?, ?);");
+
+            statement.setInt(1, categoryId);
+            statement.setInt(2, userId);
+            statement.setString(3, title);
+            statement.setString(4, contents);
+
+            if (statement.executeUpdate() == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=LAST_INSERT_ID() LIMIT 1;");
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                post = getPostFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            post = null;
+            System.err.println("Exception occurred in DatabaseManager.addPost method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return post;
     }
 
     public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCritera) {
