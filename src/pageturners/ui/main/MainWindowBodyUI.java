@@ -2,24 +2,23 @@ package pageturners.ui.main;
 
 import java.text.DateFormat;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
-import pageturners.controls.AddUserPostControl;
 import pageturners.controls.ControlDirectory;
 import pageturners.controls.CreateAccountControl;
 import pageturners.controls.LoginControl;
-import pageturners.controls.ViewCategoryControl;
 import pageturners.models.AdminObject;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserObject;
-import pageturners.models.UserPostObject;
 import pageturners.ui.UIElement;
 import pageturners.ui.modules.AddUserPostUI;
 import pageturners.ui.modules.CreateAccountUI;
@@ -43,6 +42,24 @@ public class MainWindowBodyUI extends UIElement {
         loginControl.registerAdminLoginCallback(admin -> displayAdminPanel());
         
         displayHomePage();
+    }
+
+    @Override
+    protected void show(Region region) {
+        show(region, false);
+    }
+
+    private void show(Region region, boolean scrollDown) {
+        ScrollPane scrollPane = new ScrollPane(region);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color:transparent;");
+        scrollPane.setPadding(new Insets(0, 5, 0, 0));
+
+        if (scrollDown) {
+            scrollPane.setVvalue(1);
+        }
+
+        super.show(scrollPane);
     }
 
     public void displayHomePage() {
@@ -171,8 +188,12 @@ public class MainWindowBodyUI extends UIElement {
     }
     
     public void displayPost(int postId) {
+        displayPost(postId, false);
+    }
+    
+    public void displayPost(int postId, boolean scrollDown) {
         ViewPostUI viewPostUI = new ViewPostUI(controlDirectory, this, postId);
 
-        show(viewPostUI.getNode());
+        show(viewPostUI.getNode(), scrollDown);
     }
 }
