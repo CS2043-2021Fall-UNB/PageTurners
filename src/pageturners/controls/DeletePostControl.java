@@ -7,7 +7,7 @@ public class DeletePostControl implements ControlBase {
 
     private final LoginControl loginControl;
     private final DatabaseManager databaseManager;
-       
+
     public DeletePostControl(LoginControl loginControl, DatabaseManager databaseManager) {
         this.loginControl = loginControl;
         this.databaseManager = databaseManager;

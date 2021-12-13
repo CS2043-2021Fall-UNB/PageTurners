@@ -9,4 +9,5 @@ public class UserPostObject {
     public String contents;
     public int authorId;
     public Date postDate;
+    public boolean isDeleted;
 }

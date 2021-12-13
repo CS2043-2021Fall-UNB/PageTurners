@@ -40,6 +40,20 @@ public class DatabaseManager {
 
         return user;
     }
+    
+    private UserPostObject getPostFromResultSet(ResultSet result) throws SQLException {
+        UserPostObject post = new UserPostObject();
+
+        post.id = result.getInt("PostID");
+        post.categoryId = result.getInt("CategoryID");
+        post.authorId = result.getInt("UserID");
+        post.title = result.getString("Title");
+        post.contents = result.getString("Contents");
+        post.postDate = result.getTimestamp("PostDate");
+        post.isDeleted = result.getBoolean("IsDeleted");
+
+        return post;
+    }
 
     public UserObject getUser(int userId) {
       UserObject user = null;
@@ -229,12 +243,7 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject post = new UserPostObject();
 
-                post.id = rs.getInt("ID");
-                post.categoryId = rs.getInt("CategoryID");
-                post.title = rs.getString("Title");
-                post.contents = rs.getString("Contents");
-                post.authorId = rs.getInt("AuthorID");
-                post.postDate = rs.getTimestamp("PostDate");
+                post = getPostFromResultSet(rs);
 
                 postList.add(post);
             }
@@ -292,12 +301,7 @@ public class DatabaseManager {
             while (rs.next()) {
                 UserPostObject post = new UserPostObject();
                 
-                post.id = rs.getInt("ID");
-                post.categoryId = rs.getInt("CategoryID");
-                post.title = rs.getString("Title");
-                post.contents = rs.getString("Contents");
-                post.authorId = rs.getInt("AuthorID");
-                post.postDate = rs.getTimestamp("PostDate");
+                post = getPostFromResultSet(rs);
 
                 posts.add(post);
             }
@@ -431,10 +435,6 @@ public class DatabaseManager {
         }
 
         return user;
-    }
-
-    public boolean deleteUser(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     public UserObject getUserWithPassword(String username, String password) {
