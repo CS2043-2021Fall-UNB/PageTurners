@@ -1,6 +1,7 @@
 package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
+import pageturners.models.UserObject;
 import pageturners.models.UserPostObject;
 
 public class AddUserPostControl implements ControlBase {
@@ -13,7 +14,21 @@ public class AddUserPostControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserPostObject handleAddPost(int categoryId, int userId, String postContents) {
-        return databaseManager.addPost(categoryId, userId, postContents);
+    public UserPostObject handleAddPost(int categoryId, String title, String postContents) {
+        UserObject user = loginControl.getUserObject();
+
+        if (user == null) {
+            return null;
+        }
+
+        if (title == null || title.length() == 0) {
+            return null;
+        }
+
+        if (postContents == null || postContents.length() == 0 || postContents.length() > 1024) {
+            return null;
+        }
+
+        return databaseManager.addPost(categoryId, user.id, title, postContents);
     }
 }
