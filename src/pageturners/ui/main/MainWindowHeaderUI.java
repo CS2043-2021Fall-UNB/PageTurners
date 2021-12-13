@@ -39,13 +39,16 @@ public class MainWindowHeaderUI extends UIElement {
         Button forumsButton = new Button("Forums");
         forumsButton.setOnAction(event -> mainWindow.getBody().displayCategories());
 
+        Button searchButton = new Button("Search");
+        searchButton.setOnAction(event -> mainWindow.getBody().displaySearch());
+
         Region centerRegion = new Region();
         HBox.setHgrow(centerRegion, Priority.ALWAYS);
 
         UserObject user = loginControl.getUserObject();
         AdminObject admin = loginControl.getAdminObject();
 
-        layout.getChildren().addAll(homeButton, forumsButton, centerRegion);
+        layout.getChildren().addAll(homeButton, forumsButton, searchButton, centerRegion);
 
         if (user != null) {
             Button userPanelButton = new Button("Logged in as " + user.username);

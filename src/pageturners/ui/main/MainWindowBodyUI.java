@@ -24,6 +24,7 @@ import pageturners.ui.modules.AddUserPostUI;
 import pageturners.ui.modules.CreateAccountUI;
 import pageturners.ui.modules.HomePageUI;
 import pageturners.ui.modules.LoginUI;
+import pageturners.ui.modules.SearchPostsUI;
 import pageturners.ui.modules.ViewCategoryUI;
 import pageturners.ui.modules.ViewPostUI;
 
@@ -196,4 +197,10 @@ public class MainWindowBodyUI extends UIElement {
 
         show(viewPostUI.getNode(), scrollDown);
     }
+
+	public void displaySearch() {
+        SearchPostsUI searchPostsUI = new SearchPostsUI(controlDirectory, this);
+
+        show(searchPostsUI.getNode());
+	}
 }

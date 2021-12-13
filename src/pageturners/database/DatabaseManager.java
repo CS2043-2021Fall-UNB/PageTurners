@@ -2,6 +2,7 @@ package pageturners.database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import pageturners.models.*;
 
@@ -287,7 +288,7 @@ public class DatabaseManager {
         return post;
     }
 
-    public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCritera) {
+    public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCriteria) {
         ArrayList<UserPostObject> postList = new ArrayList<UserPostObject>();
         Connection connection = null;
 
@@ -297,18 +298,7 @@ public class DatabaseManager {
             //create query string
             StringBuilder queryBuilder = new StringBuilder("SELECT * FROM UserPost NATURAL JOIN UserRecord");
             
-            for (int i = 0; i < searchCritera.keywords.length; i++) {
-                if (i == 0) {
-                    queryBuilder.append(" WHERE ");
-                }
-                else {
-                    queryBuilder.append(" OR ");
-                }
-
-                queryBuilder.append("Title LIKE ?");
-            }
-
-            for (int i = 0; i < searchCritera.categories.length; i++) {
+            for (int i = 0; i < searchCriteria.keywords.length; i++) {
                 if (i == 0) {
                     queryBuilder.append(" WHERE ");
                 }
@@ -324,21 +314,30 @@ public class DatabaseManager {
             String sqlQuery = queryBuilder.toString();
             PreparedStatement st = connection.prepareStatement(sqlQuery);
 
-            for (int i = 0; i < searchCritera.keywords.length; i++) {
-                st.setString(i + 1, "%" + searchCritera.keywords[i] + "%");
+            for (int i = 0; i < searchCriteria.keywords.length; i++) {
+                st.setString(i + 1, "%" + searchCriteria.keywords[i] + "%");
             }
 
             //execute SQL query
             ResultSet rs = st.executeQuery();
 
-            //convert retrieved rows to BookInfoObject[]
-            
+            //convert retrieved rows to UserPostObject[]
             while (rs.next()) {
                 UserPostObject post = new UserPostObject();
 
                 post = getPostFromResultSet(rs);
 
-                postList.add(post);
+                if (searchCriteria.categories == null || searchCriteria.categories.length == 0) {
+                    postList.add(post);
+                }
+                else {
+                    for (int categoryId : searchCriteria.categories) {
+                        if (categoryId == post.id) {
+                            postList.add(post);
+                            break;
+                        }
+                    }
+                }
             }
         } catch (SQLException e) {
             postList = null;
