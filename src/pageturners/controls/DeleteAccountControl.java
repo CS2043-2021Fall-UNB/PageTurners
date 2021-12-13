@@ -13,23 +13,15 @@ public class DeleteAccountControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserObject[] handleDisplayUsers() {
-      if (loginControl.getAdminObject() == null) {
-          return null;
-      }
-
-      return databaseManager.getAllUsers();
-    }
-
     public boolean handleDeleteAccount(int userId) {
-      if (loginControl.getAdminObject() == null) {
-          return false;
-      }
+        if (loginControl.getAdminObject() == null) {
+            return false;
+        }
 
-      if(!databaseManager.deleteUser(userId)){
-          return false;
-      }
+        if(!databaseManager.deleteUser(userId)){
+            return false;
+        }
 
-      return true;
+        return true;
     }
 }
