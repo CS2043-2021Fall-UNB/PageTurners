@@ -32,8 +32,6 @@ public class MainWindowHeaderUI extends UIElement {
     private void display() {
         HBox layout = new HBox();
         layout.setSpacing(5);
-        //layout.paddingProperty().set(new Insets(10));
-        //layout.setStyle("-fx-background-color: #FF0000;");
 
         Button homeButton = new Button("Home Page");
         homeButton.setOnAction(event -> mainWindow.getBody().displayHomePage());
