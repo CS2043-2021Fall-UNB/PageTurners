@@ -5,8 +5,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import pageturners.controls.AddUserCommentControl;
 import pageturners.controls.ControlDirectory;
 import pageturners.models.UserCommentObject;
@@ -31,21 +29,25 @@ public class AddUserCommentUI extends UIElement {
     }
 
     public void displayAddCommentForm() {
-
-        VBox layout = new VBox();
+        HBox layout = new HBox();
+        layout.setSpacing(5);
 
         contentsText = new TextArea();
         contentsText.setTextFormatter(new TextFormatter<String>(
             change -> change.getControlNewText().length() <= 512 ? change : null));
-
-        Region spacer = new Region();
+        contentsText.setPrefWidth(200);
                 
         Button addCommentButton = new Button("Add Comment");
+        addCommentButton.setPrefWidth(100);
         addCommentButton.setOnAction(event -> clickAddComment());
 
-        layout.getChildren().addAll(contentsText, new HBox(spacer, addCommentButton));
+        contentsText.prefHeightProperty().bind(layout.heightProperty());
+        addCommentButton.prefHeightProperty().bind(layout.heightProperty());
 
-        HBox.setHgrow(spacer, Priority.ALWAYS);
+        layout.getChildren().addAll(contentsText, addCommentButton);
+
+        HBox.setHgrow(contentsText, Priority.ALWAYS);
+        HBox.setHgrow(addCommentButton, Priority.NEVER);
 
         show(layout);
     }
@@ -54,12 +56,12 @@ public class AddUserCommentUI extends UIElement {
         String contents = contentsText.getText();
 
         if (contents == null || contents.length() == 0) {
-            displayAddCommentFailure("Please give this post some contents.");
+            displayAddCommentFailure("Please give this comment some contents.");
             return;
         }
         
         if (contents.length() > 512) {
-            displayAddCommentFailure("Your post must be less than or equal to 1024 characters.");
+            displayAddCommentFailure("Your comment must be less than or equal to 512 characters.");
             return;
         }
 
@@ -74,7 +76,7 @@ public class AddUserCommentUI extends UIElement {
     }
 
     private void displayAddCommentConfirmation(UserCommentObject comment) {
-        mainWindowBodyUI.displayPost(comment.postId);
+        mainWindowBodyUI.displayPost(comment.postId, true);
     }
 
     private void displayAddCommentFailure(String message) {
