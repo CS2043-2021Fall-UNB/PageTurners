@@ -61,7 +61,7 @@ public class DatabaseManager {
         comment.id = result.getInt("CommentID");
         comment.postId = result.getInt("PostID");
         comment.userId = result.getInt("UserID");
-        comment.contents = result.getString("Content");
+        comment.contents = result.getString("Contents");
         comment.isDeleted = result.getBoolean("IsDeleted");
         comment.commentDate = result.getTimestamp("CommentDate");
 
@@ -212,7 +212,7 @@ public class DatabaseManager {
 		try {
             connection = openConnection();
             
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserComment (PostID, UserID, Content) VALUES (?, ?, ?);");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserComment (PostID, UserID, Contents) VALUES (?, ?, ?);");
             
             //execute SQL query
             statement.setInt(1, postId);
