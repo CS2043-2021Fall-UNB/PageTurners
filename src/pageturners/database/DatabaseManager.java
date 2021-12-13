@@ -83,8 +83,27 @@ public class DatabaseManager {
       return user;
     }
 
-    public UserObject[] getAllUsers() {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserObject> getAllUsers() {
+        ArrayList<UserObject> userArray = new ArrayList<UserObject>();
+        Connection connection = null;
+
+        try{
+            connection = openConnection();
+            Statement st = connection.createStatement();
+
+            String query = "SELECT * FROM UserRecord;";
+            ResultSet result = st.executeQuery(query);
+
+            while(result.next()){
+                UserObject user = result.getUserFromResultSet(user);
+                userArray.add(user);
+            }
+        }
+        catch(SQLException e){
+            userArray = null;
+            System.err.println("Exception occurred in DatabaseManager.getAllUser method: \n" + e.toString());
+        }
+        return userArray;
     }
 
     public UserObject updateUserMute(int userId, boolean muteStatus) {
