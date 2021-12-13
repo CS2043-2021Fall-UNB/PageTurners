@@ -1,5 +1,7 @@
 package pageturners.controls;
 
+import java.util.ArrayList;
+
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserObject;
 
@@ -13,7 +15,7 @@ public class DeleteAccountControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserObject[] handleDisplayUsers() {
+    public ArrayList<UserObject> handleDisplayUsers() {
       if (loginControl.getAdminObject() == null) {
           return null;
       }
