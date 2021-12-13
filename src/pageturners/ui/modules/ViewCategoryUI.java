@@ -52,6 +52,7 @@ public class ViewCategoryUI extends UIElement {
         for (UserCategoryObject category : categories) {
             Button button = new Button(category.categoryName);
             button.setOnAction(event -> clickSelectCategory(category));
+            button.setStyle("-fx-alignment: BASELINE_LEFT;");
             button.prefWidthProperty().bind(layout.widthProperty());
 
             layout.getChildren().add(button);
@@ -99,8 +100,9 @@ public class ViewCategoryUI extends UIElement {
         }
         else {
             for (UserPostObject post : posts) {
-                Button postButton = new Button(post.title);
+                Button postButton = new Button(post.title + " by " + post.author.username);
                 postButton.prefWidthProperty().bind(layout.widthProperty());
+                postButton.setStyle("-fx-alignment: BASELINE_LEFT;");
                 postButton.setOnAction(event -> clickSelectPost(post));
     
                 layout.getChildren().add(postButton);
