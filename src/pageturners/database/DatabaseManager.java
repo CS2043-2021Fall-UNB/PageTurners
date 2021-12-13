@@ -203,36 +203,35 @@ public class DatabaseManager {
 		
 	}
 
-    //Method for Spencer to write
-    public UserPostObject addPost(int categoryId, int userId, String postContents) {
-        Connection connection = null;
+    public UserPostObject addPost(int categoryId, int userId, String title, String contents) {
         UserPostObject post = null;
+        Connection connection = null;
 
-        try{
+        try {
             connection = openConnection();
 
-            PreparedStatement statement = connection.prepareStatement("UPDATE UserPost SET PostContent=NULL WHERE PostID=?;");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserPost (CategoryID, UserID, Title, Contents) VALUES (?, ?, ?, ?);");
 
-            statement.setInt(1, postId);
-            
-            //execute SQL query
-            if(statement.executeUpdate() == 0) {
+            statement.setInt(1, categoryId);
+            statement.setInt(2, userId);
+            statement.setString(3, title);
+            statement.setString(4, contents);
+
+            if (statement.executeUpdate() == 0) {
                 return null;
             }
 
-            statement = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=?;");
-
-            statement.setInt(1, postId);
+            statement = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=LAST_INSERT_ID() LIMIT 1;");
 
             ResultSet result = statement.executeQuery();
 
-            if(result.next()){
+            if (result.next()) {
                 post = getPostFromResultSet(result);
             }
         }
         catch (SQLException e) {
             post = null;
-            System.err.println("Exception occurred in DatabaseManager.deletePostAsUser(int, int) User method:\n" + e.toString());
+            System.err.println("Exception occurred in DatabaseManager.addPost method:\n" + e.toString());
         }
         finally {
             closeConnection(connection);
@@ -366,7 +365,7 @@ public class DatabaseManager {
         try {
             connection = openConnection();
 
-            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost WHERE ID=?;");
+            PreparedStatement st = connection.prepareStatement("SELECT * FROM UserPost NATURAL JOIN UserRecord WHERE PostID=? LIMIT 1;");
 
             st.setInt(1, postID);
 
@@ -375,9 +374,19 @@ public class DatabaseManager {
             //execute SQL query
             ResultSet rs = st.executeQuery();
 
-            UserPostObject post = new UserPostObject();
+            if (rs.next()) {
+                postContent.userPost = getPostFromResultSet(rs);
+                postContent.author = getUserFromResultSet(rs);
+            }
+            else {
+                return null;
+            }
 
-            post = getPostFromResultSet(rs);
+            st = connection.prepareStatement("SELECT * FROM UserComment NATURAL JOIN UserRecord WHERE PostID=? LIMIT 200;");
+
+            st.setInt(1, postID);
+
+            rs = st.executeQuery();
 
             ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
 
@@ -385,15 +394,17 @@ public class DatabaseManager {
                 UserCommentObject comment = new UserCommentObject();
 
                 comment.id = rs.getInt("CommentID");
+                comment.postId = rs.getInt("PostID");
                 comment.userId = rs.getInt("UserID");
-                comment.content = rs.getString("Content");
+                comment.contents = rs.getString("Content");
                 comment.commentDate = rs.getTimestamp("CommentDate");
+
+                comment.user = getUserFromResultSet(rs);
 
                 commentList.add(comment);
             }
 
-            postContent.userPost = post;
-            postContent.userComment = commentList;
+            postContent.userComments = commentList;
 
         }
         catch (SQLException e) {
@@ -542,7 +553,7 @@ public class DatabaseManager {
         try{
             connection = openConnection();
 
-            PreparedStatement st = connection.prepareStatement("UPDATE UserPost SET PostContent=NULL WHERE PostID=?;");
+            PreparedStatement st = connection.prepareStatement("UPDATE UserPost SET Contents=NULL, IsDeleted=TRUE WHERE PostID=?;");
 
             st.setInt(1, postId);
             

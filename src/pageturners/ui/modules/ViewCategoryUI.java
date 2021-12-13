@@ -52,7 +52,7 @@ public class ViewCategoryUI extends UIElement {
         for (UserCategoryObject category : categories) {
             Button button = new Button(category.categoryName);
             button.setOnAction(event -> clickSelectCategory(category));
-            button.prefWidthProperty().bind(layout.widthProperty().subtract(20));
+            button.prefWidthProperty().bind(layout.widthProperty());
 
             layout.getChildren().add(button);
         }
@@ -99,13 +99,18 @@ public class ViewCategoryUI extends UIElement {
         }
         else {
             for (UserPostObject post : posts) {
-                Button button = new Button(post.title);
-                button.setOnAction(event -> clickSelectCategory(category));
+                Button postButton = new Button(post.title);
+                postButton.prefWidthProperty().bind(layout.widthProperty());
+                postButton.setOnAction(event -> clickSelectPost(post));
     
-                layout.getChildren().add(button);
+                layout.getChildren().add(postButton);
             }
         }
         
         show(layout);
+    }
+
+    private void clickSelectPost(UserPostObject post) {
+        mainWindowBodyUI.displayPost(post.id);
     }
 }

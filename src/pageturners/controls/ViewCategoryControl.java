@@ -19,7 +19,6 @@ public class ViewCategoryControl implements ControlBase {
     }
 
     public ArrayList<UserPostObject> handleViewCategory(int categoryId){
-
         ArrayList<UserPostObject> postObject = databaseManager.getPostsByCategory(categoryId);
 
         return postObject;

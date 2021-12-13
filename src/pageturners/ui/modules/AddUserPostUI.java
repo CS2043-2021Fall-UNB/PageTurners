@@ -1,9 +1,11 @@
 package pageturners.ui.modules;
 
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
@@ -12,14 +14,21 @@ import pageturners.controls.ControlDirectory;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserPostObject;
 import pageturners.ui.UIElement;
+import pageturners.ui.helpers.AlertHelper;
+import pageturners.ui.main.MainWindowBodyUI;
 
 public class AddUserPostUI extends UIElement {
 
     private final AddUserPostControl addUserPostControl;
+    private MainWindowBodyUI mainWindowBodyUI;
     private final UserCategoryObject category;
 
-    public AddUserPostUI(ControlDirectory controlDirectory, UserCategoryObject category) {
+    private TextField titleText;
+    private TextArea contentsText;
+
+    public AddUserPostUI(ControlDirectory controlDirectory, MainWindowBodyUI mainWindowBodyUI, UserCategoryObject category) {
         this.addUserPostControl = (AddUserPostControl)controlDirectory.getControl(AddUserPostControl.class);
+        this.mainWindowBodyUI = mainWindowBodyUI;
         this.category = category;
 
         displayAddPostForm();
@@ -36,10 +45,12 @@ public class AddUserPostUI extends UIElement {
         headerLabel.setFont(Font.font(15));
 
         Label titleLabel = new Label("Title:");
-        TextField titleText = new TextField();
+        titleText = new TextField();
 
         Label contentsLabel = new Label("Contents:");
-        TextArea contentsText = new TextArea();
+        contentsText = new TextArea();
+        contentsText.setTextFormatter(new TextFormatter<String>(
+            change -> change.getControlNewText().length() <= 1024 ? change : null));
         
         Button createPostButton = new Button("Create Post");
         createPostButton.setMaxWidth(Double.MAX_VALUE);
@@ -61,10 +72,38 @@ public class AddUserPostUI extends UIElement {
     }
 
     private void clickAddPost() {
-        throw new UnsupportedOperationException("Not implemented");
+        String title = titleText.getText();
+        String contents = contentsText.getText();
+
+        if (title == null || title.length() == 0) {
+            displayAddPostFailure("Please give this post a title.");
+            return;
+        }
+
+        if (contents == null || contents.length() == 0) {
+            displayAddPostFailure("Please give this post some contents.");
+            return;
+        }
+        
+        if (contents.length() > 1024) {
+            displayAddPostFailure("Your post must be less than or equal to 1024 characters.");
+            return;
+        }
+
+        UserPostObject post = addUserPostControl.handleAddPost(category.categoryId, title, contents);
+
+        if (post == null) {
+            displayAddPostFailure("An error occurred while attempting to add this post. Please try again later.");
+            return;
+        }
+        displayAddPostConfirmation(post);
     }
 
     private void displayAddPostConfirmation(UserPostObject post) {
-        throw new UnsupportedOperationException("Not implemented");
+        mainWindowBodyUI.displayPost(post.id);
+    }
+
+    private void displayAddPostFailure(String message) {
+        AlertHelper.showWarning("Create Post Failed", message);
     }
 }

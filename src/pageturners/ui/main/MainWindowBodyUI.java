@@ -19,12 +19,14 @@ import pageturners.controls.ViewCategoryControl;
 import pageturners.models.AdminObject;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserObject;
+import pageturners.models.UserPostObject;
 import pageturners.ui.UIElement;
 import pageturners.ui.modules.AddUserPostUI;
 import pageturners.ui.modules.CreateAccountUI;
 import pageturners.ui.modules.HomePageUI;
 import pageturners.ui.modules.LoginUI;
 import pageturners.ui.modules.ViewCategoryUI;
+import pageturners.ui.modules.ViewPostUI;
 
 public class MainWindowBodyUI extends UIElement {
 
@@ -163,8 +165,14 @@ public class MainWindowBodyUI extends UIElement {
     }
 
 	public void displayAddPost(UserCategoryObject category) {
-        AddUserPostUI addUserPostUI = new AddUserPostUI(controlDirectory, category);
+        AddUserPostUI addUserPostUI = new AddUserPostUI(controlDirectory, this, category);
 
         show(addUserPostUI.getNode());
-	}
+    }
+    
+    public void displayPost(int postId) {
+        ViewPostUI viewPostUI = new ViewPostUI(controlDirectory, this, postId);
+
+        show(viewPostUI.getNode());
+    }
 }
