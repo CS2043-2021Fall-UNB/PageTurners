@@ -1,6 +1,7 @@
 package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
+import pageturners.models.UserPostObject;
 
 public class DeletePostControl implements ControlBase {
 
@@ -12,7 +13,11 @@ public class DeletePostControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public boolean handleDeletePost(int postId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserPostObject handleDeletePost(int postId) {
+        if(loginControl.getAdminObject() == null){
+            return null;
+        }
+        
+        return databaseManager.deletePost(postId);
     }
 }
