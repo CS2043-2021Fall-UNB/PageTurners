@@ -1,6 +1,7 @@
 package pageturners.ui.modules;
 
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 import pageturners.controls.ControlDirectory;
 import pageturners.controls.DeletePostControl;
 import pageturners.models.UserPostObject;
@@ -14,6 +15,8 @@ public class DeletePostUI extends UIElement {
     private final MainWindowBodyUI mainWindowBodyUI;
     private final UserPostObject userPost;
 
+    private Region shownRegion;
+
     public DeletePostUI(ControlDirectory controlDirectory, MainWindowBodyUI mainWindowBodyUI, UserPostObject userPost) {
         deletePostControl = (DeletePostControl)controlDirectory.getControl(DeletePostControl.class);
         this.mainWindowBodyUI = mainWindowBodyUI;
@@ -21,16 +24,30 @@ public class DeletePostUI extends UIElement {
 
         displayDeletePostButton();
     }
+    
+    @Override
+    public Region getNode() {
+        if (shownRegion != null) {
+            return shownRegion;
+        }
+
+        return super.getNode();
+    }
 
     public void displayDeletePostButton() {
         Button deletePostButton = new Button("Delete Post");
 
         deletePostButton.setOnAction(event -> clickDeletePost());
 
-        show(deletePostButton);
+        shownRegion = deletePostButton;
+        //show(deletePostButton);
     }
 
     private void clickDeletePost() {
+        if (!AlertHelper.showYesNo("Deleting Post", "Are you sure you'd like to delete this post?")) {
+            return;
+        }
+
         UserPostObject post = deletePostControl.handleDeletePost(userPost.id);
 
         if (post == null) {
