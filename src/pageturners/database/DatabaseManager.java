@@ -147,19 +147,98 @@ public class DatabaseManager {
         return user;
     }
 
-    public UserCommentObject deleteComment(int commentId) {
-        //Spencers Code
-        throw new UnsupportedOperationException("Not implemented");
+    //Method for Spencer to write
+    public void deleteComment(int commentId) {
+		Connection connection = null;
+
+		try {
+                connection = openConnection();
+
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM comment where comment_id = ?");
+                statement.setInt(1, commentId);
+                int rowsReturned = statement.executeUpdate();
+                if (rowsReturned != 1) {
+                    System.err.println("Returned a no. of rows > 1!");
+                }
+            }
+            catch (SQLException e) {
+                System.err.println("SQL error: removeComment\n" + e.getMessage());
+            }
+        finally {
+            closeConnection(connection);
+        }
     }
 
-    public UserCommentObject addComment(int postId, int userId, String commentContents) {
-        //Spencer Code
-        throw new UnsupportedOperationException("Not implemented");
-    }
+    //Method for Spencer to write
+    public UserCommentObject addComment(int UserID, int postID, String commentContents) {
+        Connection connection = null;
+        UserCommentObject comment = null; 
+		
+		try {
+                connection = openConnection();
+                //create query string
+                String updateString = "insert into comment values (NULL, ?, ?, ?, NULL);";
+                
+                PreparedStatement statement = connection.prepareStatement(updateString);
+                
+                //execute SQL query
+                statement.setInt(1, postID);
+                statement.setString(2, userID);
+                statement.setString(3, commentContents);
+                
+                int iUpdate = statement.executeUpdate();
+                
+                if (iUpdate == 0) {
+                    System.err.println("Update failed.");
+                }
+            } 
+            catch (SQLException e) {
+                System.err.println("SQL error: createPost\n" + e.getMessage());
+            }
+        finally {
+            closeConnection(connection);
+        }
+		
+		return comment;
+		
+	}
 
+    //Method for Spencer to write
     public UserPostObject addPost(int categoryId, int userId, String postContents) {
-        //Spencer Code
-        throw new UnsupportedOperationException("Not implemented");
+        Connection connection = null;
+        UserPostObject post = null;
+
+        try{
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserPost SET PostContent=NULL WHERE PostID=?;");
+
+            statement.setInt(1, postId);
+            
+            //execute SQL query
+            if(statement.executeUpdate() == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=?;");
+
+            statement.setInt(1, postId);
+
+            ResultSet result = statement.executeQuery();
+
+            if(result.next()){
+                post = getPostFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            post = null;
+            System.err.println("Exception occurred in DatabaseManager.deletePostAsUser(int, int) User method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return post;
     }
 
     public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCritera) {
