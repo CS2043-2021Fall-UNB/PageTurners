@@ -1,6 +1,7 @@
 package pageturners.ui.modules;
 
 import javafx.scene.control.Button;
+import javafx.scene.layout.Region;
 import pageturners.controls.ControlDirectory;
 import pageturners.controls.DeleteCommentControl;
 import pageturners.models.UserCommentObject;
@@ -16,6 +17,8 @@ public class DeleteCommentUI extends UIElement {
     private final UserPostObject post;
     private final UserCommentObject comment;
 
+    private Region shownRegion;
+
     public DeleteCommentUI(ControlDirectory controlDirectory,
         MainWindowBodyUI mainWindowBodyUI, UserPostObject post, UserCommentObject comment) {
 
@@ -26,16 +29,30 @@ public class DeleteCommentUI extends UIElement {
 
         displayDeleteCommentButton();
     }
+    
+    @Override
+    public Region getNode() {
+        if (shownRegion != null) {
+            return shownRegion;
+        }
+
+        return super.getNode();
+    }
 
     private void displayDeleteCommentButton() {
-        Button deletePostButton = new Button("Delete Post");
+        Button deleteCommentButton = new Button("Delete Comment");
 
-        deletePostButton.setOnAction(event -> clickDeleteComment());
+        deleteCommentButton.setOnAction(event -> clickDeleteComment());
 
-        show(deletePostButton);
+        shownRegion = deleteCommentButton;
+        //show(deletePostButton);
     }
 
     private void clickDeleteComment() {
+        if (!AlertHelper.showYesNo("Deleting Comment", "Are you sure you'd like to delete this comment?")) {
+            return;
+        }
+        
         UserCommentObject post = deleteCommentControl.handleDeleteComment(comment.id);
 
         if (post == null) {
