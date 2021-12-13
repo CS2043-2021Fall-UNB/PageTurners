@@ -500,7 +500,64 @@ public class DatabaseManager {
         return admin;
     }
 
-    public boolean deletePost(int postId) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserPostObject deletePost(int postId) {
+        Connection connection = null;
+        UserPostObject post = null;
+
+        try{
+            connection = openConnection();
+
+            PreparedStatement st = connection.prepareStatement("UPDATE UserPost SET Contents=NULL, IsDeleted=TRUE WHERE PostID=?;");
+
+            st.setInt(1, postId);
+            
+            //execute SQL query
+            if(st.executeUpdate() == 0) {
+                return null;
+            }
+
+            st = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=?;");
+
+            st.setInt(1, postId);
+
+            ResultSet result = st.executeQuery();
+
+            if(result.next()){
+                post = getPostFromResultSet(result);
+            }
+        }
+        catch (SQLException e) {
+            post = null;
+            System.err.println("Exception occurred in DatabaseManager.deletePostAsUser(int, int) User method:\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return post;
+    }
+    
+    public boolean deleteUser(int userId) {
+        Connection connection = null;
+
+        try{
+            connection = openConnection();
+
+            PreparedStatement st = connection.prepareStatement("DELETE FROM UserRecord WHERE UserID=?;");
+
+            st.setInt(1, userId);
+
+            //execute SQL query
+            int result = st.executeUpdate();
+
+            return result > 0;
+        }
+        catch (SQLException e) {
+            System.err.println("Exception occurred in DatabaseManager.deleteAccount method:\n" + e.toString());
+            return false;
+        }
+        finally {
+            closeConnection(connection);
+        }
     }
 }
