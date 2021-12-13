@@ -1,5 +1,7 @@
 package pageturners.controls;
 
+import java.util.ArrayList;
+
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserObject;
 
@@ -13,7 +15,7 @@ public class ManageModeratorControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserObject[] handleViewAllUsers() {
+    public ArrayList<UserObject> handleViewAllUsers() {
         return databaseManager.getAllUsers();
     }
 

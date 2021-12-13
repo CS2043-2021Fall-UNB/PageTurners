@@ -113,7 +113,7 @@ public class DatabaseManager {
             ResultSet result = st.executeQuery(query);
 
             while(result.next()){
-                UserObject user = result.getUserFromResultSet(user);
+                UserObject user = getUserFromResultSet(result);
                 userArray.add(user);
             }
         }
