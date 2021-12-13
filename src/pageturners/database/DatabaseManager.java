@@ -52,6 +52,8 @@ public class DatabaseManager {
         post.postDate = result.getTimestamp("PostDate");
         post.isDeleted = result.getBoolean("IsDeleted");
 
+        post.author = getUserFromResultSet(result);
+
         return post;
     }
 
@@ -266,7 +268,7 @@ public class DatabaseManager {
                 return null;
             }
 
-            statement = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=LAST_INSERT_ID() LIMIT 1;");
+            statement = connection.prepareStatement("SELECT * FROM UserPost NATURAL JOIN UserRecord WHERE PostID=LAST_INSERT_ID() LIMIT 1;");
 
             ResultSet result = statement.executeQuery();
 
@@ -293,7 +295,7 @@ public class DatabaseManager {
             connection = openConnection();
 
             //create query string
-            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM UserPost");
+            StringBuilder queryBuilder = new StringBuilder("SELECT * FROM UserPost NATURAL JOIN UserRecord");
             
             for (int i = 0; i < searchCritera.keywords.length; i++) {
                 if (i == 0) {
@@ -382,7 +384,7 @@ public class DatabaseManager {
         try {
             Connection conn = openConnection();
 
-            PreparedStatement st = conn.prepareStatement("SELECT * FROM UserPost WHERE CategoryID=?;");
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM UserPost NATURAL JOIN UserRecord WHERE CategoryID=?;");
             st.setInt(1, categoryId);
 
             //execute SQL query
@@ -599,7 +601,7 @@ public class DatabaseManager {
                 return null;
             }
 
-            st = connection.prepareStatement("SELECT * FROM UserPost WHERE PostID=?;");
+            st = connection.prepareStatement("SELECT * FROM UserPost NATURAL JOIN UserRecord WHERE PostID=?;");
 
             st.setInt(1, postId);
 

@@ -10,4 +10,6 @@ public class UserPostObject {
     public int authorId;
     public Date postDate;
     public boolean isDeleted;
+
+    public UserObject author;
 }
