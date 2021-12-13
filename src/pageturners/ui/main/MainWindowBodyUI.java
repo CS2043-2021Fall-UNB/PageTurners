@@ -22,6 +22,7 @@ import pageturners.models.UserObject;
 import pageturners.ui.UIElement;
 import pageturners.ui.modules.AddUserPostUI;
 import pageturners.ui.modules.CreateAccountUI;
+import pageturners.ui.modules.DeleteUserAccountUI;
 import pageturners.ui.modules.HomePageUI;
 import pageturners.ui.modules.LoginUI;
 import pageturners.ui.modules.SearchPostsUI;
@@ -126,6 +127,8 @@ public class MainWindowBodyUI extends UIElement {
         Button logoutButton = new Button("Log Out");
         logoutButton.setOnAction(event -> loginControl.saveUserObject(null));
 
+        DeleteUserAccountUI deleteUserAccountUI = new DeleteUserAccountUI(controlDirectory, user);
+
         layout.add(header, 0, 0, 5, 1);
 
         layout.add(usernameLabel, 0, 1);
@@ -137,6 +140,7 @@ public class MainWindowBodyUI extends UIElement {
         layout.add(muteStatusLabel, 3, 2);
         layout.add(muteStatusText, 4, 2);
         layout.add(logoutButton, 0, 3, 5, 1);
+        layout.add(deleteUserAccountUI.getNode(), 0, 5, 5, 1);
         layout.add(new Separator(Orientation.VERTICAL), 2, 1, 1, 2);
 
         layout.setMaxWidth(Double.MAX_VALUE);
@@ -147,6 +151,7 @@ public class MainWindowBodyUI extends UIElement {
         GridPane.setHgrow(moderatorStatusText, Priority.ALWAYS);
         GridPane.setHgrow(muteStatusText, Priority.ALWAYS);
         GridPane.setHgrow(logoutButton, Priority.ALWAYS);
+        GridPane.setHgrow(deleteUserAccountUI.getNode(), Priority.ALWAYS);
 
         show(layout);
     }
