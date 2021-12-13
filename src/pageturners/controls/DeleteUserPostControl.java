@@ -14,17 +14,17 @@ public class DeleteUserPostControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public boolean handleDeletePost(UserPostObject post) {
+    public UserPostObject handleDeletePost(UserPostObject post) {
         UserObject user = loginControl.getUserObject();
 
         if (user == null) {
-            return false;
+            return null;
         }
 
-        if (user.id != post.authorID) {
-            return false;
+        if (user.id != post.authorId) {
+            return null;
         }
 
-        return databaseManager.deletePost(post.postID);
+        return databaseManager.deletePost(post.id);
     }
 }

@@ -1,33 +1,111 @@
 package pageturners.ui.modules;
 
+import java.util.ArrayList;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import pageturners.controls.ControlDirectory;
+import pageturners.controls.LoginControl;
 import pageturners.controls.ViewCategoryControl;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserPostObject;
+import pageturners.ui.UIElement;
+import pageturners.ui.main.MainWindowBodyUI;
 
-public class ViewCategoryUI {
+public class ViewCategoryUI extends UIElement {
+
     private final ViewCategoryControl viewCategoryControl;
+    private final MainWindowBodyUI mainWindowBodyUI;
+    private final LoginControl loginControl;
 
-    public ViewCategoryUI(ViewCategoryControl viewCategoryControl) {
-        this.viewCategoryControl = viewCategoryControl;
+    public ViewCategoryUI(ControlDirectory controlDirectory,
+        MainWindowBodyUI mainWindowBodyUI) {
+
+        this.viewCategoryControl = (ViewCategoryControl)controlDirectory.getControl(ViewCategoryControl.class);
+        this.mainWindowBodyUI = mainWindowBodyUI;
+        this.loginControl = (LoginControl)controlDirectory.getControl(LoginControl.class);
+
+        displayCategories();
     }
 
     public void displayCategories() {
-        throw new UnsupportedOperationException("Not implemented");
+        ArrayList<UserCategoryObject> categories = viewCategoryControl.handleViewCategories();
+
+        displayCategoryObjects(categories);
     }
 
-    private void displayCategoryObjects(UserCategoryObject[] categories) {
-        throw new UnsupportedOperationException("Not implemented");
+    private void displayCategoryObjects(ArrayList<UserCategoryObject> categories) {
+        VBox layout = new VBox();
+        layout.setSpacing(5);
+        //layout.setStyle("-fx-background-color: #0000FF;");
+
+        Label label = new Label("Categories:");
+        label.setFont(Font.font(20));
+
+        layout.getChildren().add(label);
+
+        for (UserCategoryObject category : categories) {
+            Button button = new Button(category.categoryName);
+            button.setOnAction(event -> clickSelectCategory(category));
+            button.prefWidthProperty().bind(layout.widthProperty().subtract(20));
+
+            layout.getChildren().add(button);
+        }
+        
+        show(layout);
     }
 
-    private void clickSelectCategory() {
-        throw new UnsupportedOperationException("Not implemented");
+    private void clickSelectCategory(UserCategoryObject category) {
+        ArrayList<UserPostObject> posts = viewCategoryControl.handleViewCategory(category.categoryId);
+
+        displayPosts(category, posts);
     }
 
-    private void displayPosts(UserPostObject[] posts) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
+    private void displayPosts(UserCategoryObject category, ArrayList<UserPostObject> posts) {
+        VBox layout = new VBox();
+        layout.setSpacing(5);
 
-    private void displayNoPosts() {
-        throw new UnsupportedOperationException("Not implemented");
+        HBox header = new HBox();
+
+        Label headerLabel = new Label(category.categoryName + " Posts:");
+        headerLabel.setFont(Font.font(20));
+        header.getChildren().add(headerLabel);
+
+        Region region = new Region();
+        header.getChildren().add(region);
+        HBox.setHgrow(region, Priority.ALWAYS);
+
+        if (loginControl.getUserObject() != null) {
+            Button createPostButton = new Button("Create Post");
+            createPostButton.setOnAction(event -> mainWindowBodyUI.displayAddPost(category));
+            header.getChildren().add(createPostButton);
+        }
+        else {
+            Button loginButton = new Button("Login to Create Posts");
+            loginButton.setOnAction(event -> mainWindowBodyUI.displayLoginRegister());
+            header.getChildren().add(loginButton);
+        }
+
+        layout.getChildren().add(header);
+
+        if (posts.size() == 0) {
+            Label noPostsLabel = new Label("Looks like there aren't any posts here. Why don't you be the first?");
+            layout.getChildren().add(noPostsLabel);
+        }
+        else {
+            for (UserPostObject post : posts) {
+                Button button = new Button(post.title);
+                button.setOnAction(event -> clickSelectCategory(category));
+    
+                layout.getChildren().add(button);
+            }
+        }
+        
+        show(layout);
     }
 }

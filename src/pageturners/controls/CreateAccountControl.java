@@ -11,16 +11,49 @@ public class CreateAccountControl implements ControlBase {
     public CreateAccountControl(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
-    
+
     public UserCreationResult handleCreateAccount(UserCreationInfo userInfo) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserCreationResult r = new UserCreationResult();
+
+        if (userInfo.username.length() > 16) {
+            r.usernameResult = "The username must be less than 16 characters.";
+        }
+        else if (!checkUsername(userInfo.username)) {
+            r.usernameResult = "The username is already in use.";
+        }
+        else {
+            r.usernameResult = null;
+        }
+
+        if (!checkPassword(userInfo.password)) {
+            r.passwordResult = "The password must be at least 8 characters and less than 64.";
+        }
+        else {
+            r.passwordResult = null;
+        }
+
+        if (r.passwordResult == null && r.usernameResult == null) {
+            r.userResult = databaseManager.createUser(userInfo);
+        }
+        else {
+            r.userResult = null;
+        }
+
+        return r;
     }
 
-    public boolean checkUsername(String username) {
-        throw new UnsupportedOperationException("Not implemented");
+    private boolean checkUsername(String username) {
+        if (databaseManager.getUser(username) != null) {
+            return false;
+        }
+        return true;
     }
 
-    public boolean checkPassword(String password) {
-        throw new UnsupportedOperationException("Not implemented");
+    private boolean checkPassword(String password) {
+        if (password.length() > 64 || password.length() < 8) {
+            return false;
+        }
+
+        return true;
     }
 }
