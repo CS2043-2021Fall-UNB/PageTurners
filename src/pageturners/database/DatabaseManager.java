@@ -55,6 +55,21 @@ public class DatabaseManager {
         return post;
     }
 
+    public UserCommentObject getCommentFromResultSet(ResultSet result) throws SQLException {
+        UserCommentObject comment = new UserCommentObject();
+
+        comment.id = result.getInt("CommentID");
+        comment.postId = result.getInt("PostID");
+        comment.userId = result.getInt("UserID");
+        comment.contents = result.getString("Content");
+        comment.isDeleted = result.getBoolean("IsDeleted");
+        comment.commentDate = result.getTimestamp("CommentDate");
+
+        comment.user = getUserFromResultSet(result);
+
+        return comment;
+    }
+
     public UserObject getUser(int userId) {
       UserObject user = null;
       Connection connection = null;
@@ -147,15 +162,91 @@ public class DatabaseManager {
         return user;
     }
 
+    //Method for Spencer to write
     public UserCommentObject deleteComment(int commentId) {
-        //Spencers Code
-        throw new UnsupportedOperationException("Not implemented");
+        UserCommentObject comment = null;
+		Connection connection = null;
+
+		try {
+            connection = openConnection();
+
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserComment SET Contents=NULL, IsDeleted=TRUE WHERE CommentID=?;");
+
+            statement.setInt(1, commentId);
+
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserComment NATURAL JOIN UserRecord WHERE CommentID=?;");
+
+            statement.setInt(1, commentId);
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                comment = getCommentFromResultSet(result);
+            }
+            else {
+                return null;
+            }
+        }
+        catch (SQLException e) {
+            comment = null;
+            System.err.println("SQL error: deleteComment\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+
+        return comment;
     }
 
+    //Method for Spencer to write
     public UserCommentObject addComment(int postId, int userId, String commentContents) {
-        //Spencer Code
-        throw new UnsupportedOperationException("Not implemented");
-    }
+        Connection connection = null;
+        UserCommentObject comment = null; 
+		
+		try {
+            connection = openConnection();
+            
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO UserComment (PostID, UserID, Content) VALUES (?, ?, ?);");
+            
+            //execute SQL query
+            statement.setInt(1, postId);
+            statement.setInt(2, userId);
+            statement.setString(3, commentContents);
+            
+            int rowsUpdated = statement.executeUpdate();
+            
+            if (rowsUpdated == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserComment NATURAL JOIN UserRecord WHERE CommentID=LAST_INSERT_ID();");
+
+            ResultSet result = statement.executeQuery();
+
+            if (result.next()) {
+                comment = getCommentFromResultSet(result);
+            }
+            else {
+                return null;
+            }
+        } 
+        catch (SQLException e) {
+            comment = null;
+            System.err.println("SQL error: addComment\n" + e.toString());
+        }
+        finally {
+            closeConnection(connection);
+        }
+		
+		return comment;
+		
+	}
 
     public UserPostObject addPost(int categoryId, int userId, String title, String contents) {
         UserPostObject post = null;
@@ -345,15 +436,7 @@ public class DatabaseManager {
             ArrayList<UserCommentObject> commentList = new ArrayList<UserCommentObject>();
 
             while (rs.next()) {
-                UserCommentObject comment = new UserCommentObject();
-
-                comment.id = rs.getInt("CommentID");
-                comment.postId = rs.getInt("PostID");
-                comment.userId = rs.getInt("UserID");
-                comment.contents = rs.getString("Content");
-                comment.commentDate = rs.getTimestamp("CommentDate");
-
-                comment.user = getUserFromResultSet(rs);
+                UserCommentObject comment = getCommentFromResultSet(rs);
 
                 commentList.add(comment);
             }
