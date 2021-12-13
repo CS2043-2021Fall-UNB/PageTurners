@@ -24,6 +24,12 @@ public class DeleteUserAccountControl implements ControlBase {
             return false;
         }
         
-        return databaseManager.deleteUser(userId);
+        boolean result = databaseManager.deleteUser(userId);
+
+        if (result) {
+            loginControl.saveUserObject(null);
+        }
+
+        return result;
     }
 }
