@@ -30,12 +30,20 @@ public class LoginControl implements ControlBase {
     public void saveAdminObject(AdminObject adminObject) {
         this.adminObject = adminObject;
     }
-    
+
     public UserObject handleUserLogin(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+        UserObject user = databaseManager.getUserWithPassword(username, password);
+
+        saveUserObject(user);
+
+        return user;
     }
 
     public AdminObject handleAdminLogin(String username, String password) {
-        throw new UnsupportedOperationException("Not implemented");
+      AdminObject admin = databaseManager.getAdminWithPassword(username, password);
+
+      saveAdminObject(admin);
+
+      return admin;
     }
 }
