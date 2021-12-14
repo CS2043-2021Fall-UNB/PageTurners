@@ -25,6 +25,10 @@ public class AddUserCommentControl implements ControlBase {
             return null;
         }
 
+        if (user.isMuted) {
+            return null;
+        }
+
         return databaseManager.addComment(postId, user.id, commentContents);
     } 
 }
