@@ -31,7 +31,7 @@ public class MainWindowUI extends UIElement {
         createControls();
 
         headerUI = new MainWindowHeaderUI(this, controlDirectory);
-        bodyUI = new MainWindowBodyUI(controlDirectory);
+        bodyUI = new MainWindowBodyUI(controlDirectory, databaseManager);
         footerUI = new MainWindowFooterUI(controlDirectory);
 
         display();
@@ -104,6 +104,7 @@ public class MainWindowUI extends UIElement {
         controlDirectory.addControl(new CreateAccountControl(databaseManager));
         controlDirectory.addControl(new DeleteAccountControl(loginControl, databaseManager));
         controlDirectory.addControl(new DeleteCommentControl(loginControl, databaseManager));
+        controlDirectory.addControl(new DeletePostControl(loginControl, databaseManager));
         controlDirectory.addControl(new DeleteUserAccountControl(loginControl, databaseManager));
         controlDirectory.addControl(new DeleteUserCommentControl(loginControl, databaseManager));
         controlDirectory.addControl(new DeleteUserPostControl(loginControl, databaseManager));

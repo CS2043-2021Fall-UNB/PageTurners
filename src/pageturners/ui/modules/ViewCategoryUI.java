@@ -81,15 +81,15 @@ public class ViewCategoryUI extends UIElement {
         header.getChildren().add(region);
         HBox.setHgrow(region, Priority.ALWAYS);
 
-        if (loginControl.getUserObject() != null) {
-            Button createPostButton = new Button("Create Post");
-            createPostButton.setOnAction(event -> mainWindowBodyUI.displayAddPost(category));
-            header.getChildren().add(createPostButton);
-        }
-        else {
+        if (loginControl.getUserObject() == null) {
             Button loginButton = new Button("Login to Create Posts");
             loginButton.setOnAction(event -> mainWindowBodyUI.displayLoginRegister());
             header.getChildren().add(loginButton);
+        }
+        else if (!loginControl.getUserObject().isMuted) {
+            Button createPostButton = new Button("Create Post");
+            createPostButton.setOnAction(event -> mainWindowBodyUI.displayAddPost(category));
+            header.getChildren().add(createPostButton);
         }
 
         layout.getChildren().add(header);

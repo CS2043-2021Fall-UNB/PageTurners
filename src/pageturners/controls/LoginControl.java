@@ -52,6 +52,7 @@ public class LoginControl implements ControlBase {
         UserObject user = databaseManager.getUserWithPassword(username, password);
 
         if (user != null) {
+            saveAdminObject(null);
             saveUserObject(user);
         }
 
@@ -62,6 +63,7 @@ public class LoginControl implements ControlBase {
       AdminObject admin = databaseManager.getAdminWithPassword(username, password);
 
       if (admin != null) {
+          saveUserObject(null);
           saveAdminObject(admin);
       }
 

@@ -20,6 +20,18 @@ public class AlertHelper {
         alert.showAndWait();
     }
     
+    public static void showInfo(String title, String message) {
+        
+        Alert alert = new Alert(AlertType.INFORMATION);
+
+        alert.setGraphic(null);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
+    }
+    
     public static boolean showYesNo(String title, String message) {
         
         Alert alert = new Alert(AlertType.CONFIRMATION);

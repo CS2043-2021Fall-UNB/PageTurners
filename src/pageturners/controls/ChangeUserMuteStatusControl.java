@@ -18,7 +18,8 @@ public class ChangeUserMuteStatusControl implements ControlBase {
     }
 
     public UserObject handleUpdateUserMute(int userId, boolean muteStatus) {
-        if (loginControl.getAdminObject() == null) {
+        if (loginControl.getAdminObject() == null
+            && (loginControl.getUserObject() == null || !loginControl.getUserObject().isMod)) {
             return null;
         }
 
