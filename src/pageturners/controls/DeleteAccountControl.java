@@ -1,5 +1,7 @@
 package pageturners.controls;
 
+import java.util.ArrayList;
+
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserObject;
 
@@ -13,11 +15,23 @@ public class DeleteAccountControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserObject[] handleDisplayUsers() {
-        throw new UnsupportedOperationException("Not implemented");
+    public ArrayList<UserObject> handleDisplayUsers() {
+      if (loginControl.getAdminObject() == null) {
+          return null;
+      }
+
+      return databaseManager.getAllUsers();
     }
 
     public boolean handleDeleteAccount(int userId) {
-        throw new UnsupportedOperationException("Not implemented");
+      if (loginControl.getAdminObject() == null) {
+          return false;
+      }
+
+      if(!databaseManager.deleteUser(userId)){
+          return false;
+      }
+
+      return true;
     }
 }

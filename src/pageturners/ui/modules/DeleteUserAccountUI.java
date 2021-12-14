@@ -1,16 +1,18 @@
 package pageturners.ui.modules;
 
+import pageturners.controls.ControlDirectory;
 import pageturners.controls.DeleteUserAccountControl;
-import pageturners.models.UserCommentObject;
+import pageturners.models.UserObject;
+import pageturners.ui.UIElement;
 
-public class DeleteUserAccountUI {
+public class DeleteUserAccountUI extends UIElement {
 
     private final DeleteUserAccountControl deleteUserAccountControl;
-    private final UserCommentObject userCommentObject;
+    private final UserObject userObject;
 
-    public DeleteUserAccountUI(DeleteUserAccountControl deleteUserAccountControl, UserCommentObject userCommentObject) {
-        this.deleteUserAccountControl = deleteUserAccountControl;
-        this.userCommentObject = userCommentObject;
+    public DeleteUserAccountUI(ControlDirectory controlDirectory, UserObject userObject) {
+        this.deleteUserAccountControl = (DeleteUserAccountControl)controlDirectory.getControl(DeleteUserAccountControl.class);
+        this.userObject = userObject;
     }
 
     public void displayDeleteAccountForm() {

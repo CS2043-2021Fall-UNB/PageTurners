@@ -1,6 +1,7 @@
 package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
+import pageturners.models.UserObject;
 
 public class DeleteUserAccountControl implements ControlBase {
 
@@ -12,7 +13,23 @@ public class DeleteUserAccountControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public boolean handleDeleteAccount() {
-        throw new UnsupportedOperationException("Not implemented");
+    public boolean handleDeleteAccount(int userId) {
+        UserObject user = loginControl.getUserObject();
+
+        if (user == null) {
+            return false;
+        }
+
+        if(user.id != userId){
+            return false;
+        }
+        
+        boolean result = databaseManager.deleteUser(userId);
+
+        if (result) {
+            loginControl.saveUserObject(null);
+        }
+
+        return result;
     }
 }

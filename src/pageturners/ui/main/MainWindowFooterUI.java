@@ -1,11 +1,10 @@
 package pageturners.ui.main;
 
-import javafx.scene.Node;
 import javafx.scene.layout.HBox;
 import pageturners.controls.ControlDirectory;
 import pageturners.ui.UIElement;
 
-public class MainWindowFooterUI implements UIElement {
+public class MainWindowFooterUI extends UIElement {
 
     public static final int HEIGHT = 40;
 
@@ -13,26 +12,16 @@ public class MainWindowFooterUI implements UIElement {
 
     public MainWindowFooterUI(ControlDirectory controlDirectory) {
         this.controlDirectory = controlDirectory;
+
     }
 
-    @Override
-    public Node createNode() {
-        Node[] children = createChildren();
+    private void display() {
+        HBox layout = new HBox();
 
-        HBox layout = new HBox(children);
-
-        layout.setMinHeight(HEIGHT);
-        layout.setMaxHeight(HEIGHT);
-
+        //layout.setMinHeight(HEIGHT);
+        //layout.setMaxHeight(HEIGHT);
         //layout.setStyle("-fx-background-color: #0000FF;");
 
-        return layout;
+        show(layout);
     }
-
-    private Node[] createChildren() {
-        return new Node[] {
-            
-        };
-    }
-    
 }

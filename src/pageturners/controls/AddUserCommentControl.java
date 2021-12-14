@@ -2,6 +2,7 @@ package pageturners.controls;
 
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserCommentObject;
+import pageturners.models.UserObject;
 
 public class AddUserCommentControl implements ControlBase {
     
@@ -13,7 +14,17 @@ public class AddUserCommentControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
 
-    public UserCommentObject handleAddComment(int postId, int userId, String commentContents) {
-        throw new UnsupportedOperationException("Not implemented");
+    public UserCommentObject handleAddComment(int postId, String commentContents) {
+        if (commentContents.length() == 0 || commentContents.length() > 512) {
+            return null;
+        }
+
+        UserObject user = loginControl.getUserObject();
+
+        if (user == null) {
+            return null;
+        }
+
+        return databaseManager.addComment(postId, user.id, commentContents);
     } 
 }

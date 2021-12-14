@@ -1,5 +1,7 @@
 package pageturners.controls;
 
+import java.util.ArrayList;
+
 import pageturners.database.DatabaseManager;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserPostObject;
@@ -12,13 +14,12 @@ public class ViewCategoryControl implements ControlBase {
         this.databaseManager = databaseManager;
     }
     
-    public UserCategoryObject[] handleViewCategories() {
+    public ArrayList<UserCategoryObject> handleViewCategories() {
         return databaseManager.getCategories();
     }
 
-    public UserPostObject[] handleViewCategory(int categoryId){
-
-        UserPostObject[] postObject = databaseManager.getPostsByCategory(categoryId);
+    public ArrayList<UserPostObject> handleViewCategory(int categoryId){
+        ArrayList<UserPostObject> postObject = databaseManager.getPostsByCategory(categoryId);
 
         return postObject;
     }
