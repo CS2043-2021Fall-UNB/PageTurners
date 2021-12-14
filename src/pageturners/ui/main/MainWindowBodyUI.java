@@ -104,9 +104,9 @@ public class MainWindowBodyUI extends UIElement {
     }
 
     public void displayUserPanel() {
-        UserObject user = loginControl.getUserObject();
+        UserObject currentUser = loginControl.getUserObject();
 
-        if (user == null) {
+        if (currentUser == null) {
             displayLoginRegister();
             return;
         }
@@ -116,25 +116,27 @@ public class MainWindowBodyUI extends UIElement {
         layout.setHgap(15);
         layout.setVgap(5);
 
-        Label header = new Label("User Panel - Welcome " + user.username + "!");
+        Label header = new Label("User Panel - Welcome " + currentUser.username + "!");
         header.setFont(Font.font(30));
 
         Label usernameLabel = new Label("Username:");
-        Label usernameText = new Label(user.username);
+        Label usernameText = new Label(currentUser.username);
 
         Label accountCreatedLabel = new Label("Account Created:");
-        Label accountCreatedText = new Label(ACCOUNT_CREATED_DATE_FORMAT.format(user.accountCreated));
+        Label accountCreatedText = new Label(ACCOUNT_CREATED_DATE_FORMAT.format(currentUser.accountCreated));
 
         Label moderatorStatusLabel = new Label("Is Moderator?");
-        Label moderatorStatusText = new Label(user.isMod ? "Yes" : "No");
+        Label moderatorStatusText = new Label(currentUser.isMod ? "Yes" : "No");
 
         Label muteStatusLabel = new Label("Is Muted?");
-        Label muteStatusText = new Label(user.isMuted ? "Yes" : "No");
+        Label muteStatusText = new Label(currentUser.isMuted ? "Yes" : "No");
 
         Button logoutButton = new Button("Log Out");
         logoutButton.setOnAction(event -> loginControl.saveUserObject(null));
 
-        layout.add(header, 0, 0, 5, 1);
+        int totalCols = 5;
+
+        layout.add(header, 0, 0, totalCols, 1);
 
         layout.add(usernameLabel, 0, 1);
         layout.add(usernameText, 1, 1);
@@ -144,8 +146,29 @@ public class MainWindowBodyUI extends UIElement {
         layout.add(moderatorStatusText, 4, 1);
         layout.add(muteStatusLabel, 3, 2);
         layout.add(muteStatusText, 4, 2);
-        layout.add(logoutButton, 0, 3, 5, 1);
+        layout.add(logoutButton, 0, 3, totalCols, 1);
         layout.add(new Separator(Orientation.VERTICAL), 2, 1, 1, 2);
+
+        if (currentUser.isMod) {
+            
+            int row = 4;
+
+            ArrayList<UserObject> users = databaseManager.getAllUsers();
+
+            Label usersHeader = new Label("Forum Users:");
+            usersHeader.setFont(Font.font(15));
+
+            layout.add(usersHeader, 0, row++, totalCols, 1);        
+
+            for (UserObject user : users) {
+                Label userLabel = new Label(user.username);
+                ChangeUserMuteStatusUI changeUserMuteStatusUI = new ChangeUserMuteStatusUI(controlDirectory, currentUser);
+
+                layout.add(userLabel, 0, row, totalCols - 2, 1);
+                layout.add(changeUserMuteStatusUI.getNode(), totalCols - 2, row, 2, 1);
+                row++;
+            }
+        }
 
         layout.setMaxWidth(Double.MAX_VALUE);
         logoutButton.setMaxWidth(Double.MAX_VALUE);
