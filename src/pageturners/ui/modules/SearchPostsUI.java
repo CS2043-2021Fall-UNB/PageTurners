@@ -94,8 +94,9 @@ public class SearchPostsUI extends UIElement {
 
         SearchCriteria criteria = new SearchCriteria();
 
-        List<String> keywords = Arrays.asList(searchText.getText().split(" "));
-        keywords.removeIf(x -> x.length() == 0);
+        List<String> keywords = new ArrayList<String>(Arrays.asList(searchText.getText().split(" ")));
+        
+        keywords.removeIf(x -> x == null || x.length() == 0);
 
         criteria.keywords = keywords.toArray(new String[0]);
         criteria.categories = selectedCategories.stream().mapToInt(Number::intValue).toArray();

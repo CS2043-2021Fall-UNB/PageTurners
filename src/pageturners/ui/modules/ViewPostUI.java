@@ -120,7 +120,7 @@ public class ViewPostUI extends UIElement {
             loginButton.setOnAction(event -> mainWindowBodyUI.displayLoginRegister());
             layout.add(loginButton, 0, commentRow++, totalCols, 1);
         }
-        else {
+        else if (!loginControl.getUserObject().isMuted) {
             AddUserCommentUI addUserCommentUI = new AddUserCommentUI(controlDirectory, mainWindowBodyUI, postContent.userPost);
             layout.add(addUserCommentUI.getNode(), 0, commentRow++, totalCols, 1);
             addUserCommentUI.getNode().setMinHeight(50);

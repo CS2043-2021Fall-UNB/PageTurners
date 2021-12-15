@@ -1,6 +1,7 @@
 package pageturners.ui.main;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -12,19 +13,24 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import pageturners.controls.ControlDirectory;
 import pageturners.controls.CreateAccountControl;
 import pageturners.controls.LoginControl;
+import pageturners.database.DatabaseManager;
 import pageturners.models.AdminObject;
 import pageturners.models.UserCategoryObject;
 import pageturners.models.UserObject;
 import pageturners.ui.UIElement;
 import pageturners.ui.modules.AddUserPostUI;
+import pageturners.ui.modules.ChangeUserMuteStatusUI;
 import pageturners.ui.modules.CreateAccountUI;
 import pageturners.ui.modules.DeleteUserAccountUI;
+import pageturners.ui.modules.DeleteAccountUI;
 import pageturners.ui.modules.HomePageUI;
 import pageturners.ui.modules.LoginUI;
+import pageturners.ui.modules.ManageModeratorUI;
 import pageturners.ui.modules.SearchPostsUI;
 import pageturners.ui.modules.ViewCategoryUI;
 import pageturners.ui.modules.ViewPostUI;
@@ -34,10 +40,12 @@ public class MainWindowBodyUI extends UIElement {
     private static final DateFormat ACCOUNT_CREATED_DATE_FORMAT = DateFormat.getDateTimeInstance();
 
     private final ControlDirectory controlDirectory;
+    private final DatabaseManager databaseManager;
     private final LoginControl loginControl;
 
-    public MainWindowBodyUI(ControlDirectory controlDirectory) {
+    public MainWindowBodyUI(ControlDirectory controlDirectory, DatabaseManager databaseManager) {
         this.controlDirectory = controlDirectory;
+        this.databaseManager = databaseManager;
 
         loginControl = (LoginControl)controlDirectory.getControl(LoginControl.class);
         loginControl.registerUserLoginCallback(user -> displayUserPanel());
@@ -97,9 +105,9 @@ public class MainWindowBodyUI extends UIElement {
     }
 
     public void displayUserPanel() {
-        UserObject user = loginControl.getUserObject();
+        UserObject currentUser = loginControl.getUserObject();
 
-        if (user == null) {
+        if (currentUser == null) {
             displayLoginRegister();
             return;
         }
@@ -109,28 +117,29 @@ public class MainWindowBodyUI extends UIElement {
         layout.setHgap(15);
         layout.setVgap(5);
 
-        Label header = new Label("User Panel - Welcome " + user.username + "!");
+        Label header = new Label("User Panel - Welcome " + currentUser.username + "!");
         header.setFont(Font.font(30));
 
         Label usernameLabel = new Label("Username:");
-        Label usernameText = new Label(user.username);
+        Label usernameText = new Label(currentUser.username);
 
         Label accountCreatedLabel = new Label("Account Created:");
-        Label accountCreatedText = new Label(ACCOUNT_CREATED_DATE_FORMAT.format(user.accountCreated));
+        Label accountCreatedText = new Label(ACCOUNT_CREATED_DATE_FORMAT.format(currentUser.accountCreated));
 
         Label moderatorStatusLabel = new Label("Is Moderator?");
-        Label moderatorStatusText = new Label(user.isMod ? "Yes" : "No");
+        Label moderatorStatusText = new Label(currentUser.isMod ? "Yes" : "No");
 
         Label muteStatusLabel = new Label("Is Muted?");
-        Label muteStatusText = new Label(user.isMuted ? "Yes" : "No");
+        Label muteStatusText = new Label(currentUser.isMuted ? "Yes" : "No");
 
         Button logoutButton = new Button("Log Out");
         logoutButton.setOnAction(event -> loginControl.saveUserObject(null));
 
-        DeleteUserAccountUI deleteUserAccountUI = new DeleteUserAccountUI(controlDirectory, user);
+        DeleteUserAccountUI deleteUserAccountUI = new DeleteUserAccountUI(controlDirectory, currentUser);
 
-        layout.add(header, 0, 0, 5, 1);
+        int totalCols = 5;
 
+        layout.add(header, 0, 0, totalCols, 1);
         layout.add(usernameLabel, 0, 1);
         layout.add(usernameText, 1, 1);
         layout.add(accountCreatedLabel, 0, 2);
@@ -139,9 +148,30 @@ public class MainWindowBodyUI extends UIElement {
         layout.add(moderatorStatusText, 4, 1);
         layout.add(muteStatusLabel, 3, 2);
         layout.add(muteStatusText, 4, 2);
-        layout.add(logoutButton, 0, 3, 5, 1);
-        layout.add(deleteUserAccountUI.getNode(), 0, 5, 5, 1);
+        layout.add(logoutButton, 0, 3, totalCols, 1);
+        layout.add(deleteUserAccountUI.getNode(), 0, 4, totalCols, 1);
         layout.add(new Separator(Orientation.VERTICAL), 2, 1, 1, 2);
+
+        if (currentUser.isMod) {
+            
+            int row = 5;
+
+            ArrayList<UserObject> users = databaseManager.getAllUsers();
+
+            Label usersHeader = new Label("Forum Users:");
+            usersHeader.setFont(Font.font(15));
+
+            layout.add(usersHeader, 0, row++, totalCols, 1);        
+
+            for (UserObject user : users) {
+                Label userLabel = new Label(user.username);
+                ChangeUserMuteStatusUI changeUserMuteStatusUI = new ChangeUserMuteStatusUI(controlDirectory, currentUser);
+
+                layout.add(userLabel, 0, row, totalCols - 2, 1);
+                layout.add(changeUserMuteStatusUI.getNode(), totalCols - 2, row, 2, 1);
+                row++;
+            }
+        }
 
         layout.setMaxWidth(Double.MAX_VALUE);
         logoutButton.setMaxWidth(Double.MAX_VALUE);
@@ -164,10 +194,13 @@ public class MainWindowBodyUI extends UIElement {
             return;
         }
 
-        GridPane layout = new GridPane();
+        VBox mainLayout = new VBox();
+        mainLayout.setSpacing(5);
 
-        layout.setHgap(15);
-        layout.setVgap(5);
+        GridPane userInfoLayout = new GridPane();
+
+        userInfoLayout.setHgap(15);
+        userInfoLayout.setVgap(5);
 
         Label header = new Label("Admin Panel - Welcome " + admin.username + "!");
         header.setFont(Font.font(30));
@@ -178,13 +211,44 @@ public class MainWindowBodyUI extends UIElement {
         Label accountCreatedLabel = new Label("Account Created");
         Label accountCreatedText = new Label(ACCOUNT_CREATED_DATE_FORMAT.format(admin.accountCreated));
 
-        layout.add(header, 0, 0, 2, 1);
-        layout.add(usernameLabel, 0, 1);
-        layout.add(usernameText, 1, 1);
-        layout.add(accountCreatedLabel, 0, 2);
-        layout.add(accountCreatedText, 1, 2);
+        Button logoutButton = new Button("Log Out");
+        logoutButton.setOnAction(event -> loginControl.saveAdminObject(null));
 
-        show(layout);
+        userInfoLayout.add(header, 0, 0, 2, 1);
+        userInfoLayout.add(usernameLabel, 0, 1);
+        userInfoLayout.add(usernameText, 1, 1);
+        userInfoLayout.add(accountCreatedLabel, 0, 2);
+        userInfoLayout.add(accountCreatedText, 1, 2);
+        userInfoLayout.add(logoutButton, 0, 3, 2, 1);
+        
+        mainLayout.getChildren().add(userInfoLayout);
+
+        logoutButton.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setHgrow(logoutButton, Priority.ALWAYS);
+        
+        ArrayList<UserObject> users = databaseManager.getAllUsers();
+
+        Label usersHeader = new Label("Forum Users:");
+        usersHeader.setFont(Font.font(15));
+
+        mainLayout.getChildren().add(usersHeader);        
+
+        for (UserObject user : users) {
+            ChangeUserMuteStatusUI changeUserMuteStatusUI = new ChangeUserMuteStatusUI(controlDirectory, user);
+            ManageModeratorUI manageModeratorUI = new ManageModeratorUI(controlDirectory, user);
+            DeleteAccountUI deleteAccountUI = new DeleteAccountUI(controlDirectory, this, user);
+
+            HBox hLayout = new HBox(changeUserMuteStatusUI.getNode(), manageModeratorUI.getNode(), deleteAccountUI.getNode());
+            hLayout.setSpacing(5);
+
+            HBox.setHgrow(changeUserMuteStatusUI.getNode(), Priority.ALWAYS);
+            HBox.setHgrow(manageModeratorUI.getNode(), Priority.ALWAYS);
+            HBox.setHgrow(deleteAccountUI.getNode(), Priority.ALWAYS);
+
+            mainLayout.getChildren().addAll(new Label(user.username), hLayout);
+        }
+
+        show(mainLayout);
     }
 
 	public void displayAddPost(UserCategoryObject category) {

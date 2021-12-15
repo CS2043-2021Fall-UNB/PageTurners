@@ -18,7 +18,11 @@ public class SearchPostsControl implements ControlBase {
         return databaseManager.getCategories();
     }
 
-    public ArrayList<UserPostObject> handleSearchPosts(SearchCriteria searchCritera) {
-        return databaseManager.getPostsByKeywords(searchCritera);
+    public ArrayList<UserPostObject> handleSearchPosts(SearchCriteria searchCriteria) {
+        if (searchCriteria.keywords.length == 0) {
+            return null;
+        }
+
+        return databaseManager.getPostsByKeywords(searchCriteria);
     }
 }

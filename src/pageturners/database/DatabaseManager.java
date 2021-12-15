@@ -2,8 +2,6 @@ package pageturners.database;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import pageturners.models.*;
 
 public class DatabaseManager {
@@ -134,11 +132,18 @@ public class DatabaseManager {
         try {
             connection = openConnection();
 
-            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMuted=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMuted=? WHERE UserId=?;");
 
             statement.setBoolean(1, muteStatus);
             statement.setInt(2, userId);
-            statement.setInt(3, userId);
+
+            if (statement.executeUpdate() == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+            
+            statement.setInt(1, userId);
 
             ResultSet result = statement.executeQuery();
 
@@ -164,11 +169,18 @@ public class DatabaseManager {
         try {
             connection = openConnection();
 
-            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMod=? WHERE UserId=?; SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+            PreparedStatement statement = connection.prepareStatement("UPDATE UserRecord SET IsMod=? WHERE UserId=?;");
 
             statement.setBoolean(1, isModerator);
             statement.setInt(2, userId);
-            statement.setInt(3, userId);
+
+            if (statement.executeUpdate() == 0) {
+                return null;
+            }
+
+            statement = connection.prepareStatement("SELECT * FROM UserRecord WHERE UserId=? LIMIT 1;");
+            
+            statement.setInt(1, userId);
 
             ResultSet result = statement.executeQuery();
 

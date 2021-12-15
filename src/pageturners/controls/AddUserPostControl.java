@@ -21,6 +21,10 @@ public class AddUserPostControl implements ControlBase {
             return null;
         }
 
+        if (user.isMuted) {
+            return null;
+        }
+
         if (title == null || title.length() == 0) {
             return null;
         }
