@@ -26,7 +26,7 @@ public class DatabaseManager {
             System.err.printf("Couldn't close connection: (%s)%n", e.getMessage());
         }
     }
-
+/* Not My work
     private UserObject getUserFromResultSet(ResultSet result) throws SQLException {
         UserObject user = new UserObject();
 
@@ -321,7 +321,7 @@ public class DatabaseManager {
 
         return post;
     }
-
+*/
     public ArrayList<UserPostObject> getPostsByKeywords(SearchCriteria searchCriteria) {
         ArrayList<UserPostObject> postList = new ArrayList<UserPostObject>();
         Connection connection = null;
@@ -489,7 +489,7 @@ public class DatabaseManager {
 
         return postContent;
     }
-
+/*
     public UserObject getUser(String username) {
         UserObject user = null;
         Connection connection = null;
@@ -679,3 +679,4 @@ public class DatabaseManager {
         }
     }
 }
+*/
