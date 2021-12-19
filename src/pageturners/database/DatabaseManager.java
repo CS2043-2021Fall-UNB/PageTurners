@@ -6,7 +6,7 @@ import pageturners.models.*;
 
 public class DatabaseManager {
 
-    private static Connection openConnection() throws SQLException {
+    public static Connection openConnection() throws SQLException {
         // In real-world applications, these should not be hard-coded here.
         final String url = "jdbc:mysql://cs2043.cs.unb.ca:3306/cs204301ateam10";
         final String user = "cs204301ateam10";
@@ -15,7 +15,7 @@ public class DatabaseManager {
         return DriverManager.getConnection(url, user, password);
     }
 
-    private static void closeConnection(Connection conn) {
+    public static void closeConnection(Connection conn) {
         if (conn == null) {
             return;
         }
